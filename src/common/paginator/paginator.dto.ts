@@ -1,4 +1,4 @@
-import { IsNumber, IsOptional, IsString } from "class-validator";
+import { IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
 
 export class PaginatorDto {
 
@@ -11,4 +11,8 @@ export class PaginatorDto {
     @IsString()
     @IsOptional()
     searchText?: string;
+
+    @IsUUID()
+    @IsOptional()
+    clientId?: string;
 }

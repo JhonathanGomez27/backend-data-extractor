@@ -10,6 +10,6 @@ import { ClientsController } from './clients.controller';
     ],
     controllers: [ClientsController],
     providers: [ClientsService],
-    exports: []
+    exports: [ClientsService]
 })
 export class ClientsModule {}

@@ -23,4 +23,13 @@ export class AuthService {
         const payload = { sub: user.id, email: user.email, role: user.role };
         return { access_token: this.jwt.sign(payload), user: { id: user.id, email: user.email, role: user.role } };
     }
+
+    // Opcional: verificar o decodificar manualmente
+    verifyToken(token: string) {
+        return this.jwt.verify(token);
+    }
+
+    decodeToken(token: string) {
+        return this.jwt.decode(token);
+    }
 }
