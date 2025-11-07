@@ -1,0 +1,49 @@
+### Variables
+@API_URL = http://localhost:3000
+@TOKEN = your_jwt_token_here
+
+
+### 1. Create Client
+POST {{API_URL}}/api/admin/clients
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Cliente Test",
+  "description": "Descripción del cliente de prueba",
+  "imageUrl": "https://example.com/logo.png",
+  "basicUsername": "testclient",
+  "basicPassword": "password123"
+}
+
+
+### 2. Get All Clients (with pagination)
+GET {{API_URL}}/api/admin/clients?page=1&limit=10
+Authorization: Bearer {{TOKEN}}
+
+
+### 3. Get All Clients (without pagination)
+GET {{API_URL}}/api/admin/clients
+Authorization: Bearer {{TOKEN}}
+
+
+### 4. Get Client by ID
+@CLIENT_ID = your_client_id_here
+GET {{API_URL}}/api/admin/clients/{{CLIENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+
+### 5. Reset Client Basic Auth
+PATCH {{API_URL}}/api/admin/clients/{{CLIENT_ID}}/reset-basic
+Authorization: Bearer {{TOKEN}}
+
+
+### Example with real ID (replace with actual ID)
+### Get Client by ID - Example
+GET {{API_URL}}/api/admin/clients/1
+Authorization: Bearer {{TOKEN}}
+
+
+### Reset Client Basic Auth - Example
+PATCH {{API_URL}}/api/admin/clients/1/reset-basic
+Authorization: Bearer {{TOKEN}}

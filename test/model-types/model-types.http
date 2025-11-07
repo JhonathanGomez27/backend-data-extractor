@@ -1,0 +1,53 @@
+### Variables
+@API_URL = http://localhost:3000
+@TOKEN = your_jwt_token_here
+@CLIENT_ID = your_client_id_here
+
+
+### 1. Create Model Type (Global - without clientId)
+POST {{API_URL}}/api/model-types
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Tipo de Modelo Global",
+  "description": "Este es un tipo de modelo global disponible para todos los clientes"
+}
+
+
+### 2. Create Model Type (Specific - with clientId)
+POST {{API_URL}}/api/model-types
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Tipo de Modelo Específico",
+  "description": "Este es un tipo de modelo específico para un cliente",
+  "clientId": "{{CLIENT_ID}}"
+}
+
+
+### 3. Get All Model Types (without pagination)
+GET {{API_URL}}/api/model-types
+Authorization: Bearer {{TOKEN}}
+
+
+### 4. Get All Model Types (with pagination)
+GET {{API_URL}}/api/model-types?page=1&limit=10
+Authorization: Bearer {{TOKEN}}
+
+
+### 5. Get Model Types filtered by Client ID
+GET {{API_URL}}/api/model-types?clientId={{CLIENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+
+### 6. Get Model Types filtered by Client ID (with pagination)
+GET {{API_URL}}/api/model-types?page=1&limit=10&clientId={{CLIENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+
+### Example with real Client ID
+### Get Model Types for specific client
+GET {{API_URL}}/api/model-types?clientId=123e4567-e89b-12d3-a456-426614174000
+Authorization: Bearer {{TOKEN}}

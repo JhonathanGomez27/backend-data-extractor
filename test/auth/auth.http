@@ -1,0 +1,12 @@
+
+### Admin Login
+@API_URL = http://localhost:3000
+
+
+POST {{API_URL}}/api/auth/login
+Content-Type: application/json
+
+{
+  "email": "admin@example.com",
+  "password": "admin123"
+}

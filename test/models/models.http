@@ -1,0 +1,112 @@
+### Variables
+@API_URL = http://localhost:3000
+@TOKEN = your_jwt_token_here
+@CLIENT_ID = your_client_id_here
+@MODEL_TYPE_ID = your_model_type_id_here
+@MODEL_ID = your_model_id_here
+
+# Basic Auth credentials (username:password in base64)
+@BASIC_AUTH = Basic base64_encoded_username:password
+
+
+##################################################
+### ADMIN ENDPOINTS (JWT Authentication)
+##################################################
+
+### 1. Create Model (Admin)
+POST {{API_URL}}/api/models/admin/models
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Modelo de Prueba",
+  "modelTypeId": "{{MODEL_TYPE_ID}}",
+  "clientId": "{{CLIENT_ID}}",
+  "data": {
+    "campo1": "valor1",
+    "campo2": "valor2",
+    "propiedadCustom": "cualquier dato adicional"
+  }
+}
+
+
+### 2. List All Models (Admin)
+GET {{API_URL}}/api/models/admin/models
+Authorization: Bearer {{TOKEN}}
+
+
+### 3. List Models filtered by Client ID (Admin)
+GET {{API_URL}}/api/models/admin/models?clientId={{CLIENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+
+##################################################
+### CLIENT ENDPOINTS (Basic Authentication)
+##################################################
+
+### 4. List Models for Client (Basic Auth)
+GET {{API_URL}}/api/models/client/models
+Authorization: {{BASIC_AUTH}}
+
+
+### 5. List Models filtered by Model Type (Client)
+GET {{API_URL}}/api/models/client/models?modelTypeId={{MODEL_TYPE_ID}}
+Authorization: {{BASIC_AUTH}}
+
+
+### 6. List Models with Search (Client)
+GET {{API_URL}}/api/models/client/models?search=prueba
+Authorization: {{BASIC_AUTH}}
+
+
+### 7. List Models with Pagination (Client)
+GET {{API_URL}}/api/models/client/models?limit=10&offset=0
+Authorization: {{BASIC_AUTH}}
+
+
+### 8. List Models with Sorting (Client)
+# Options: createdAt:desc, createdAt:asc, name:asc, name:desc
+GET {{API_URL}}/api/models/client/models?sort=name:asc
+Authorization: {{BASIC_AUTH}}
+
+
+### 9. List Models with Specific Fields (Client)
+GET {{API_URL}}/api/models/client/models?fields=id,name,modelTypeId
+Authorization: {{BASIC_AUTH}}
+
+
+### 10. List Models with All Filters (Client)
+GET {{API_URL}}/api/models/client/models?modelTypeId={{MODEL_TYPE_ID}}&search=test&limit=20&offset=0&sort=createdAt:desc&fields=id,name,data
+Authorization: {{BASIC_AUTH}}
+
+
+### 11. Get Model by ID (Client)
+GET {{API_URL}}/api/models/client/models/{{MODEL_ID}}
+Authorization: {{BASIC_AUTH}}
+
+
+##################################################
+### EXAMPLES WITH REAL VALUES
+##################################################
+
+### Example: Create Model with real IDs
+POST {{API_URL}}/api/models/admin/models
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "iPhone 15 Pro",
+  "modelTypeId": "123e4567-e89b-12d3-a456-426614174000",
+  "clientId": "987fcdeb-51a2-43f7-8765-123456789abc",
+  "data": {
+    "color": "Titanium Blue",
+    "storage": "256GB",
+    "processor": "A17 Pro"
+  }
+}
+
+
+### Example: Get Models with Basic Auth (replace with actual credentials)
+# To generate Basic Auth: echo -n "username:password" | base64
+GET {{API_URL}}/api/models/client/models
+Authorization: Basic dGVzdGNsaWVudDpwYXNzd29yZDEyMw==
