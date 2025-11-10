@@ -21,6 +21,9 @@ export class ClientsController {
     async getClients(
         @Query() paginator: PaginatorDto
     ) {
+        paginator.page = paginator.page ? parseInt(paginator.page as any, 10) : 1;
+        paginator.limit = paginator.limit ? parseInt(paginator.limit as any, 10) : 10;
+
         return this.service.findAll(paginator);
     }
 

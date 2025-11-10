@@ -32,11 +32,12 @@ export class ClientsService {
     }
 
     async findAll(paginator: PaginatorDto): Promise<{ data: ClientEntity[]; total: number }> {
-        const skip = (paginator.page - 1) * paginator.limit;
+        const skip = (paginator.page - 1) * paginator.limit || 0;
+        const limit = paginator.limit || 10;
 
         const clients = await this.clientRepo.findAndCount({
             skip,
-            take: paginator.limit,
+            take: limit,
             where: {
                 ...(paginator.searchText && {
                     name: Like(`%${paginator.searchText}%`)

@@ -1,6 +1,6 @@
 ### Variables
 @API_URL = http://localhost:3000
-@TOKEN = your_jwt_token_here
+@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMjRhYTZkMy0zYTUyLTRmZDktOGI3Yi02NDdkYzM3MWQ5NTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzYyODE1NTEwLCJleHAiOjE3NjI4MTkxMTB9.CksRHNGsp3amFmPh0BVplfhsxAMGqqWxUImabnp00wQ
 @CLIENT_ID = your_client_id_here
 
 

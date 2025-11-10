@@ -16,12 +16,13 @@ export class ModelTypesService {
     }
 
     async findAll(paginator: PaginatorDto, clientId?: string): Promise<{data: ModelTypeEntity[]; total: number}> {
-        const skip = (paginator.page - 1) * paginator.limit;
+        const skip = (paginator.page - 1) * paginator.limit || 0;
+        const limit = paginator.limit || 10;
 
         if(!clientId) {
             const [data, total] = await this.repo.findAndCount({
                 skip,
-                take: paginator.limit,
+                take: limit,
                 where: {clientId: IsNull()},
             });
             return {data, total};
