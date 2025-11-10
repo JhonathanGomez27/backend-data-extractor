@@ -16,6 +16,9 @@ export class ModelEntity {
   @Column({ type: 'varchar' })
   name: string;
 
+  @Column({ type: 'text', nullable: true })
+  description: string | null;
+
   // Campos genéricos ahora; luego puedes ampliarlos (JSON, metadatos, etc.)
   @Column({ type: 'jsonb', default: {} }) data: Record<string, any>;
 
