@@ -8,6 +8,7 @@ import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { LocalStrategy } from './admin/local.strategy';
 import { JwtStrategy } from './admin/jwt.strategy';
+import { JwtRefreshStrategy } from './admin/jwt-refresh.strategy';
 import { BasicStrategy } from 'src/clients/basic.strategy';
 import { ClientsService } from 'src/clients/clients.service';
 
@@ -25,7 +26,7 @@ import { ClientsService } from 'src/clients/clients.service';
     }),
     ConfigModule
   ],
-  providers: [AuthService, LocalStrategy, JwtStrategy, BasicStrategy],
+  providers: [AuthService, LocalStrategy, JwtStrategy, JwtRefreshStrategy, BasicStrategy],
   controllers: [AuthController],
   exports: [JwtModule]
 })
