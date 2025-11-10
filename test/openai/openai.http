@@ -1,0 +1,120 @@
+### Variables
+@API_URL = http://localhost:3000
+@TOKEN = your_jwt_token_here
+
+
+### 1. Generate Template - Basic Goal
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Quiero detectar si el agente menciona la marca 'TechCorp' en los primeros 30 segundos"
+}
+
+
+### 2. Generate Template - Sentiment Analysis
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Analizar el sentimiento general de la conversación y detectar emociones negativas"
+}
+
+
+### 3. Generate Template - Entity Extraction
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Extraer nombres de empresas, productos y marcas mencionadas en la conversación"
+}
+
+
+### 4. Generate Template - Consent Verification
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Verificar si el cliente otorgó consentimiento para el tratamiento de datos personales"
+}
+
+
+### 5. Generate Template - With Details
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Detectar si se mencionó algún producto específico y analizar el tono de la conversación",
+  "details": {
+    "industry": "retail",
+    "productTypes": ["electronics", "appliances"],
+    "language": "es"
+  }
+}
+
+
+### 6. Generate Template - Time-based Detection
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Verificar que el agente realice el saludo corporativo en los primeros 15 segundos de la llamada"
+}
+
+
+### 7. Generate Template - Multi-criteria Analysis
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Analizar si la conversación cumple con: saludo inicial, identificación del agente, oferta del producto, y cierre apropiado",
+  "details": {
+    "scriptType": "sales",
+    "clientType": "B2C"
+  }
+}
+
+
+### 8. Generate Template - Emotion Detection
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Identificar momentos de frustración o enojo del cliente durante la conversación"
+}
+
+
+### 9. Generate Template - Compliance Check
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Verificar cumplimiento de normativas: menciona política de privacidad, solicita consentimiento y ofrece derecho a réplica",
+  "details": {
+    "regulation": "GDPR",
+    "country": "ES"
+  }
+}
+
+
+### 10. Generate Template - Custom Business Rule
+POST {{API_URL}}/api/openai/generate-template
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "goal": "Detectar si el agente ofrece descuentos o promociones no autorizadas",
+  "details": {
+    "authorizedDiscounts": [10, 15, 20],
+    "maxDiscountPercent": 20
+  }
+}

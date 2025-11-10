@@ -1,6 +1,8 @@
 import { Controller, Post, Request, UseGuards } from '@nestjs/common';
 import { AuthGuard } from '@nestjs/passport';
 import { AuthService } from './auth.service';
+import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
+import { JwtRefreshAuthGuard } from 'src/common/guards/jwt-refresh-auth.guard';
 
 @Controller('auth')
 export class AuthController {
@@ -12,7 +14,7 @@ export class AuthController {
     return this.auth.issueJwt(req.user); // { access_token, refresh_token, user }
   }
 
-  @UseGuards(AuthGuard('jwt-refresh'))
+  @UseGuards(JwtRefreshAuthGuard)
   @Post('refresh')
   async refresh(@Request() req) {
     const userId = req.user.sub;
@@ -20,7 +22,7 @@ export class AuthController {
     return this.auth.refreshTokens(userId, refreshToken);
   }
 
-  @UseGuards(AuthGuard('jwt'))
+  @UseGuards(JwtAuthGuard)
   @Post('logout')
   async logout(@Request() req) {
     await this.auth.logout(req.user.sub);

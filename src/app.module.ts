@@ -9,6 +9,7 @@ import { ModelsModule } from './models/models.module';
 import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { DatabaseModule } from './common/database/database.module';
+import { OpenaiModule } from './openai/openai.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { DatabaseModule } from './common/database/database.module';
     ClientsModule,
     ModelTypesModule,
     ModelsModule,
+    OpenaiModule,
   ],
   controllers: [AppController],
   providers: [AppService],

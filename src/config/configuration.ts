@@ -17,5 +17,8 @@ export default () => ({
     admin: {
         email: process.env.ADMIN_USERNAME || 'admin@example.com',
         password: process.env.ADMIN_PASSWORD || 'adminPassword',
+    },
+    openai: {
+        apiKey: process.env.OPENAI_API_KEY || 'your_openai_api_key_here'
     }
 })
