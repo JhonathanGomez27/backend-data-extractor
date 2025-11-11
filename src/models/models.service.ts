@@ -28,6 +28,8 @@ export class ModelsService {
 
         const [items, total] = await this.repo.findAndCount({
             where,
+            select: ['id', 'name', 'description', 'clientId', 'modelTypeId', 'createdAt'],
+            relations: ['modelType'],
             order: { createdAt: 'DESC' },
             take: limit,
             skip: (page - 1) * limit,
@@ -68,7 +70,7 @@ export class ModelsService {
 
     async getForClient(id: string) {
         const clientId = this.request.user?.clientId as string;
-        const m = await this.repo.findOne({ where: { id, clientId } });
+        const m = await this.repo.findOne({ where: { id, clientId }, relations: ['modelType'] });
         if (!m) throw new NotFoundException();
         return m;
     }

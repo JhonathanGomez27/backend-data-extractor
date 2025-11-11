@@ -11,13 +11,14 @@ export class ModelsController {
 
     // ADMIN
     @UseGuards(JwtAuthGuard)
-    @Post('admin/models')
+    @Post('')
     create(@Body() dto: CreateModelDto) { return this.service.create(dto); }
 
     //Get all models with pagination
     @UseGuards(JwtAuthGuard)
-    @Get('admin/models')
+    @Get('')
     listModels(@Query() paginator: PaginatorDto) { return this.service.listModels(paginator); }
+    
 
     // @UseGuards(JwtAuthGuard)
     // @Get('admin/models')
@@ -31,8 +32,8 @@ export class ModelsController {
         return this.service.listForClient({ modelTypeId, search, limit: +limit, offset: +offset, sort, fields });
     }
 
-    @UseGuards(BasicAuthGuard)
-    @Get('client/models/:id')
+    @UseGuards(JwtAuthGuard)
+    @Get(':id')
     getClient(@Param('id') id: string) {
         return this.service.getForClient(id); // valida ownership dentro del service
     }

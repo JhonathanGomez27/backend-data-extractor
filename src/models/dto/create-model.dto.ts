@@ -2,6 +2,8 @@ import { IsNotEmpty, IsString, IsUUID, IsOptional, IsObject } from 'class-valida
 
 export class CreateModelDto {
   @IsString() @IsNotEmpty() name: string;
+
+  @IsOptional() @IsString() description?: string;
   
   @IsUUID() modelTypeId: string;
 

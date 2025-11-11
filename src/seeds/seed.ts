@@ -43,6 +43,7 @@ async function run() {
     'topics',
     'validation_model_mobil',
     'LegalizacionMovil',
+    'otro'
   ];
   for (const name of defaults) {
     const found = await repo.findOne({ where: { name, clientId: null } });
