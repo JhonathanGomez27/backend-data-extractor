@@ -17,8 +17,13 @@ export class ModelTypesController {
   @Get()
   list(
     @Query() paginator: PaginatorDto
-) {
+  ) {
     // global + específicos si pasa clientId
     return this.service.findAll(paginator, paginator.clientId);
+  }
+
+  @Get('all')
+  getAll() {
+    return this.service.listAll();
   }
 }

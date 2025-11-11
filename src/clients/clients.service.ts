@@ -36,6 +36,14 @@ export class ClientsService {
         const limit = paginator.limit || 10;
 
         const clients = await this.clientRepo.findAndCount({
+            select: {
+                id: true,
+                name: true,
+                description: true,
+                imageUrl: true,
+                basicUsername: true,
+                createdAt: true
+            },
             skip,
             take: limit,
             where: {
@@ -52,7 +60,14 @@ export class ClientsService {
     }
 
     async findById(id: string): Promise<ClientEntity | null> {
-        return this.clientRepo.findOne({ where: { id } });
+        return this.clientRepo.findOne({ where: { id }, select: {
+            id: true,
+            name: true,
+            description: true,
+            imageUrl: true,
+            basicUsername: true,
+            createdAt: true
+        } });
     }
 
     async rotateBasicPassword(id: string): Promise<{ username: string; password: string }> {

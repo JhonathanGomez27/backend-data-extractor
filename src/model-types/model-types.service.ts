@@ -35,4 +35,8 @@ export class ModelTypesService {
         });
         return {data, total};
     }
+
+    async listAll(): Promise<ModelTypeEntity[]> {
+        return this.repo.find();
+    }
 }

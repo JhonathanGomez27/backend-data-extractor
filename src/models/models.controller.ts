@@ -3,6 +3,7 @@ import { ModelsService } from './models.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CreateModelDto } from './dto/create-model.dto';
 import { BasicAuthGuard } from 'src/common/guards/basic-auth.guard';
+import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 
 @Controller('models')
 export class ModelsController {
@@ -13,9 +14,14 @@ export class ModelsController {
     @Post('admin/models')
     create(@Body() dto: CreateModelDto) { return this.service.create(dto); }
 
+    //Get all models with pagination
     @UseGuards(JwtAuthGuard)
     @Get('admin/models')
-    listAdmin(@Query('clientId') clientId?: string) { return this.service.listAdmin({ clientId }); }
+    listModels(@Query() paginator: PaginatorDto) { return this.service.listModels(paginator); }
+
+    // @UseGuards(JwtAuthGuard)
+    // @Get('admin/models')
+    // listAdmin(@Query('clientId') clientId?: string) { return this.service.listAdmin({ clientId }); }
 
     // CLIENT (Basic)
     @UseGuards(BasicAuthGuard)

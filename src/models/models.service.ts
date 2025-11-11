@@ -4,6 +4,7 @@ import { ModelEntity } from './model.entity';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
 import { REQUEST as REQ } from '@nestjs/core';
 import { CreateModelDto } from './dto/create-model.dto';
+import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 
 @Injectable({ scope: Scope.REQUEST })
 export class ModelsService {
@@ -18,7 +19,29 @@ export class ModelsService {
         return this.repo.save(this.repo.create(dto));
     }
 
-    listAdmin({ clientId }: { clientId?: string }) {
+    async listModels(paginatorDto: PaginatorDto) {
+        const where: FindOptionsWhere<ModelEntity> = {};
+        if (paginatorDto.clientId) where.clientId = paginatorDto.clientId;
+
+        const { page = 1, limit = 10, searchText } = paginatorDto;
+        if (searchText) (where as any).name = ILike(`%${searchText}%`);
+
+        const [items, total] = await this.repo.findAndCount({
+            where,
+            order: { createdAt: 'DESC' },
+            take: limit,
+            skip: (page - 1) * limit,
+        });
+
+        return {
+            data: items,
+            total,
+            page,
+            limit,
+        };
+    }
+
+    async listAdmin({ clientId }: { clientId?: string }) {
         const where: FindOptionsWhere<ModelEntity> = {};
         if (clientId) where.clientId = clientId;
         return this.repo.find({ where, order: { createdAt: 'DESC' } });

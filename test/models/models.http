@@ -1,6 +1,6 @@
 ### Variables
 @API_URL = http://localhost:3000
-@TOKEN = your_jwt_token_here
+@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiIyMGU4YmMzMC04OWI3LTRlMWMtYjk2OS01NDYzNTliNjJjM2MiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzYyODY2ODQyLCJleHAiOjE3NjI4NzA0NDJ9.ZkXbd0glfPuDUz8eCyNh-DZv6ZrqvCSyXz501LiBwr0
 @CLIENT_ID = your_client_id_here
 @MODEL_TYPE_ID = your_model_type_id_here
 @MODEL_ID = your_model_id_here
@@ -31,7 +31,7 @@ Authorization: Bearer {{TOKEN}}
 
 
 ### 2. List All Models (Admin)
-GET {{API_URL}}/api/models/admin/models
+GET {{API_URL}}/api/models/admin/models?page=1&limit=20
 Authorization: Bearer {{TOKEN}}
 
 
