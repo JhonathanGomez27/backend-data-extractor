@@ -9,5 +9,6 @@ import { ConfigModule } from '@nestjs/config';
   ],
   controllers: [OpenaiController],
   providers: [OpenaiService],
+  exports: [OpenaiService],
 })
 export class OpenaiModule {}

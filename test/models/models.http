@@ -1,12 +1,12 @@
 ### Variables
 @API_URL = http://localhost:3000
-@TOKEN = eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOiJlMjRhYTZkMy0zYTUyLTRmZDktOGI3Yi02NDdkYzM3MWQ5NTgiLCJlbWFpbCI6ImFkbWluQGV4YW1wbGUuY29tIiwicm9sZSI6IkFETUlOIiwiaWF0IjoxNzYyODkzOTQwLCJleHAiOjE3NjI4OTc1NDB9.WnS8s1lKuc9ICJDWbn7nlOYdzxB5QnodWH8L-IGN3Jg
+@TOKEN = your_jwt_token_here
 @CLIENT_ID = 17e38111-0fb1-4236-806a-666a53bee2ab
 @MODEL_TYPE_ID = e3ebad38-cb97-4bf3-83e0-ccc229e599d1
 @MODEL_ID = your_model_id_here
 
 # Basic Auth credentials (username:password in base64)
-@BASIC_AUTH = Basic base64_encoded_username:password
+@BASIC_AUTH = Basic dGVzdGNsaWVudDpwYXNzd29yZDEyMw==
 
 
 ##################################################
@@ -52,13 +52,23 @@ Authorization: Bearer {{TOKEN}}
 }
 
 
-### 2. List All Models (Admin)
+### 2. List All Models with Pagination (Admin)
 GET {{API_URL}}/api/models?page=1&limit=20
 Authorization: Bearer {{TOKEN}}
 
 
-### 3. List Models filtered by Client ID (Admin)
-GET {{API_URL}}/api/models/admin/models?clientId={{CLIENT_ID}}
+### 3. List Models with Search (Admin)
+GET {{API_URL}}/api/models?page=1&limit=10&searchText=marca
+Authorization: Bearer {{TOKEN}}
+
+
+### 4. List Models filtered by Client ID (Admin)
+GET {{API_URL}}/api/models?clientId={{CLIENT_ID}}&page=1&limit=10
+Authorization: Bearer {{TOKEN}}
+
+
+### 5. Get Model by ID (Admin)
+GET {{API_URL}}/api/models/{{MODEL_ID}}
 Authorization: Bearer {{TOKEN}}
 
 
@@ -66,69 +76,161 @@ Authorization: Bearer {{TOKEN}}
 ### CLIENT ENDPOINTS (Basic Authentication)
 ##################################################
 
-### 4. List Models for Client (Basic Auth)
+### 6. List Models for Client (Basic Auth)
 GET {{API_URL}}/api/models/client/models
 Authorization: {{BASIC_AUTH}}
 
 
-### 5. List Models filtered by Model Type (Client)
-GET {{API_URL}}/api/models/client/models?modelTypeId={{MODEL_TYPE_ID}}
+### 7. List Models for Client with Pagination (Basic Auth)
+GET {{API_URL}}/api/models/client/models?page=1&limit=10
 Authorization: {{BASIC_AUTH}}
 
 
-### 6. List Models with Search (Client)
-GET {{API_URL}}/api/models/client/models?search=prueba
+### 8. List Models for Client with Search (Basic Auth)
+GET {{API_URL}}/api/models/client/models?searchText=template&page=1&limit=20
 Authorization: {{BASIC_AUTH}}
 
 
-### 7. List Models with Pagination (Client)
-GET {{API_URL}}/api/models/client/models?limit=10&offset=0
+### 9. Extract Model for Client
+POST {{API_URL}}/api/models/client/extract?saludo=1d8d5dcf-50fc-475f-b67e-9c0d3be3f12e&despedida=d8b79506-7eda-400c-adea-aa355c25608d
+Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 
+{
+  "transcripcion": [
+    {"speaker":"agent","init_time":"1,710","end_time":"3,300","text":" Buenas tardes , Así es , verdad , "},{"speaker":"agent","init_time":"4,520","end_time":"9,830","text":" Buenas tardes , Yo soy Amparo del departamento de bienvenidas de Endesa para hacerte la grabación de seguridad , Estás listo ? "},{"speaker":"agent","init_time":"14,180","end_time":"21,140","text":" Que sí , perfecto , Le recuerdo que no se me puede interrumpir durante la grabación , vale ? Y que tiene que tener a mano "},{"speaker":"agent","init_time":"21,540","end_time":"24,600","text":" número de cuenta , la dirección , todo lo que le haga falta para decírmelo , "},{"speaker":"agent","init_time":"26,040","end_time":"27,720","text":" Venga , Correcto , Pues comienzo , "},{"speaker":"agent","init_time":"29,050","end_time":"30,700","text":" Buenas tardes , pregunto por decir "},{"speaker":"agent","init_time":"31,360","end_time":"47,470","text":" mi nombre es Amparo , Le llamo en nombre de Endesa Energía , la Compañía de Luz y de Gas resolver facilitado sus datos en nuestra ubicación en Electrógeno Ricardo Frontera número tres cero ocho nueve cero seis Escribe de Llobregat Barcelona Firma histórica , Tengo el consentimiento para recibir nuestra oferta y descuentos , "},{"speaker":"agent","init_time":"49,400","end_time":"50,720","text":" Es correcto entonces verdad ? "},{"speaker":"agent","init_time":"51,990","end_time":"57,210","text":" Perfecto , Pues le informo que esta llamada está siendo grabada por por motivos de calidad y seguridad , Nos ponemos en contacto "},{"speaker":"agent","init_time":"57,490","end_time":"65,590","text":" para ofrecerle información sobre productos , servicios de Endesa que puedan ser de su interés , así como oferta energética paletizada que mejor se adapte a sus necesidades de consumo energético , "},{"speaker":"client","init_time":"67,690","end_time":"68,170","text":" De acuerdo "},{"speaker":"agent","init_time":"68,670","end_time":"69,670","text":" otorga su consentimiento , "},{"speaker":"agent","init_time":"71,740","end_time":"79,090","text":" Perfecto pues si desea obtener más información sobre nuestra política de protección de Datos , incluida la forma ejercer su derecho , puede consultar en nuestra web Uve doble "},{"speaker":"agent","init_time":"79,490","end_time":"91,790","text":" de esta Puntocom , El motivo de la llamada es para aplicarle en su nueva en su factura la nueva tarifa libre de esa promoción formidable para que pueda disfrutar de un ahorro este año , Lo que permanezca Endesa , Es usted el titular del punto de Suministro , verdad ? "},{"speaker":"agent","init_time":"94,500","end_time":"101,820","text":" Perfecto , Pues dígame por favor la dirección del punto de suministro en la cual le vamos a aplicar la oferta , código postal , localidad y provincia incluida por favor "},{"speaker":"client","init_time":"104,020","end_time":"107,260","text":" dos mil cuatro y Barcelona Terraza "},{"speaker":"agent","init_time":"107,840","end_time":"108,800","text":" y la dirección "},{"speaker":"client","init_time":"109,530","end_time":"112,800","text":" Calle León Bajo , "},{"speaker":"agent","init_time":"113,860","end_time":"120,250","text":" Perfecto , Pues le resumo la tarifa ofertada se llama Libren de esa promoción formidable por la que se beneficiará de "},{"speaker":"agent","init_time":"120,640","end_time":"153,400","text":" un precio fijo las veinticuatro horas del día , Pero coma uno , seis , dos , nueve , cinco , uno euros el kilovatios hora , a lo que se le aplica un veinte por ciento de descuento durante dos años en el término de energía al contratar el suministro de luz con Endesa , un tres por ciento de descuento durante dos años en el término de energía al contratar el producto entre sesenta plus , un dos por ciento de descuento durante un año determinado de energía al contratar la factura electrónica y otro diez por ciento de descuento durante un año determinado de energía contratar el suministro de luz con Endesa , Recordarle que este contrato está sujeto a un año de permanencia , "},{"speaker":"agent","init_time":"153,850","end_time":"163,330","text":" La aplicación del descuento está sujeto a la activación de los productos contratado el precio de servicios de cuatro puntos cincuenta y cuatro cincuenta y dos euros al mes IVA incluido y contiene las siguientes Cobertura "},{"speaker":"agent","init_time":"164,140","end_time":"209,620","text":" mide asistencia del centro de servicio las veinticuatro horas del día , los trescientos sesenta y cinco días del año , Asistencia telefónica del centro de servicio las veinticuatro horas del día los trescientos sesenta y cinco días del año de para obtener eléctrica no urgente en menos de cuarenta y ocho horas laborables No urgente averías que no afectan al suministro de luz , frigorífico congelador para cenar , Eléctrica urgente en menos de tres horas las veinticuatro horas del día los trescientos sesenta y cinco días del año , Urgente avería que sí afectan al suministro de luz , frigorífico congelador , Seguro de protección de pago Protege pago en caso de fallecimiento , accidente , incapacidad , hospitalización y pérdida involuntaria de empleo con una bonificación de hasta quinientos euros , El teléfono es el ocho cero , cero , cero , cero , nueve , cinco , cinco , seis , Preparación de electrodomésticos urgente de menos de cuarenta y ocho horas laborables , Incluye el desplazamiento y tres horas de mano de obra , "},{"speaker":"agent","init_time":"210,520","end_time":"215,950","text":" Incluye lavadora , secadora , frigorífico , congelador , la vajilla , campana , horno , vitrocerámica o instalación eléctrica , "},{"speaker":"agent","init_time":"216,370","end_time":"232,180","text":" También incluye cerrajería menos de cuarenta y ocho laborable maximato al año , Servicio de cerrajería y apertura de caja fuerte en caso de rotura o fallo de llave , Hasta quinientos euros IVA incluido más intervención , Fontanería en menos de cuarenta y ocho horas laborables maximato al año , Reparaciones de fuga del grifo La Daniela Luisa sifón y cisterna , "},{"speaker":"agent","init_time":"232,580","end_time":"249,530","text":" Te parece un atasco del baño y tuberías de agua y reparación de radiadores hasta quinientos euro IVA incluido más intervención , Y por último , cristalería a menos de cuarenta y ocho laborable maximato al año , Intervención por daño , rotura o mal funcionamiento de ventanas interiores y reparación o sustitución de ventanas trimestrales rota hasta quinientos euro IVA incluido más intervención , "},{"speaker":"agent","init_time":"250,060","end_time":"258,640","text":" Indicarle que podrá solicitar la separación de cerrajería , fontanería , cristalería y electrodoméstico cuando hayan pasado treinta días naturales , a contar desde la fecha de activación del contrato , "},{"speaker":"agent","init_time":"259,710","end_time":"265,350","text":" Quiere informarle de que recibirá un estremece para la tramitación de su contrato al teléfono que nos indique ? Me indica el teléfono por favor ? "},{"speaker":"client","init_time":"266,770","end_time":"268,150","text":" Doce Blanco , "},{"speaker":"agent","init_time":"269,580","end_time":"273,030","text":" Perfecto , Es el resumen de la oferta contratada a regir , Esta de acuerdo , verdad ? "},{"speaker":"agent","init_time":"274,550","end_time":"282,650","text":" Perfecto , Entonces procedemos a la lectura del texto legal si tiene alguna duda al momento de declararla , porque durante el texto legal no se podrá interrumpir alguna duda regir que tengas , "},{"speaker":"client","init_time":"283,400","end_time":"283,730","text":" No , "},{"speaker":"agent","init_time":"283,960","end_time":"300,310","text":" no , perfecto , Pues sigo el señor Daniel , Para su seguridad grabamos la conversación para que quede constancia en su interese y contratar el suministro de luz con Endesa Energía Sau de servicio de protección tres sesenta Plus con él desde aquí servicio cuando me quieren , Calle Ribera del Loira , número sesenta veintiocho , cero cuarenta y dos , Madrid Está de acuerdo , verdad ? "},{"speaker":"agent","init_time":"301,640","end_time":"314,870","text":" Perfecto , Pues hoy a continuación procedemos con la lectura final , Hoy dieciseis de febrero de dos mil veinticuatro , Cuando son las dieciocho cuarenta y tres , Mírenme , Primeramente necesito que se identifique usted Racing , Por favor dígame su nombre completo "},{"speaker":"agent","init_time":"317,570","end_time":"318,770","text":" es su DNI , Por favor "},{"speaker":"client","init_time":"319,530","end_time":"321,120","text":" escuadra el número del "},{"speaker":"agent","init_time":"323,780","end_time":"326,180","text":" perfecto y su fecha de nacimiento , por favor "},{"speaker":"client","init_time":"326,610","end_time":"328,950","text":" el veinte ochenta y nueve ochenta y cuatro , "},{"speaker":"agent","init_time":"329,640","end_time":"332,790","text":" Perfecto , Usted como titular del punto de suministro en "},{"speaker":"agent","init_time":"333,200","end_time":"334,100","text":" calle de hora "},{"speaker":"agent","init_time":"334,560","end_time":"347,970","text":" conjunto calle de hora número tres bajo segunda código postal cero ocho , dos , dos , cuatro en Tarrasa Barcelona Concursen luz ese cero , cero treinta y uno , Cuarenta cincuenta y tres , Cero uno , cincuenta y nueve setenta , cero , dos , I griega , "},{"speaker":"agent","init_time":"349,040","end_time":"350,720","text":" Pero este es correcto , verdad ? "},{"speaker":"client","init_time":"351,360","end_time":"351,870","text":" Correcto , "},{"speaker":"agent","init_time":"352,110","end_time":"358,080","text":" Autoricen , Desea enviarle un examen para la tramitación de su contrato al teléfono que nos indique ? Me puedes repetir el teléfono , por favor ? "},{"speaker":"client","init_time":"359,510","end_time":"361,220","text":" Cuatro treinta y siete , "},{"speaker":"agent","init_time":"361,630","end_time":"368,860","text":" Perfecto , Ahora por favor necesito que me indique el IBAN de la cuenta de la cual el titular coincide con el punto de suministro donde se desean domiciliar los pagos , "},{"speaker":"client","init_time":"371,250","end_time":"375,880","text":" España , Sesenta y uno , veintiuno , Tengo "},{"speaker":"client","init_time":"377,850","end_time":"380,550","text":" siete , dos , uno , uno , "},{"speaker":"client","init_time":"381,220","end_time":"381,790","text":" Gonzalo , "},{"speaker":"client","init_time":"384,240","end_time":"386,430","text":" cuatro , tres , nueve , "},{"speaker":"agent","init_time":"387,020","end_time":"391,430","text":" Perfecto , Ahora por favor , confírmame el correo electrónico para activar la factura electrónica , "},{"speaker":"client","init_time":"392,320","end_time":"394,060","text":" Rachel Yagu "},{"speaker":"agent","init_time":"399,170","end_time":"400,730","text":" Arroba , gmail Puntocom , verdad ? "},{"speaker":"client","init_time":"400,790","end_time":"401,370","text":" Liquidez , "},{"speaker":"agent","init_time":"401,580","end_time":"428,910","text":" Perfecto , Igualmente se le informa de que el caso de las condiciones para acceder al bono social , la suscripción de este contrato impedirá su aplicación , Para cualquier consulta reclamación en relación con estos contratos puede contactar con Endesa a través del teléfono ocho cero cero siete seis cero nueve cero nueve , A través de Triple Doble Punto Endesa Clientes PuntoCom a la dirección , Atención al cliente Rubén de Son en PuntoCom o cualquiera de nuestra oficinas comerciales o punto de servicio Endesa , Gracias , Nombre de Endesa para detener esa llamada fue Litoral , Sí , Ya hemos terminado la grabación , Vale , "},{"speaker":"agent","init_time":"429,710","end_time":"432,530","text":" Venga , Muchísimas gracias por tu tiempo , corazón , Ten buena tarde , "},{"speaker":"agent","init_time":"433,060","end_time":"433,990","text":" Hasta luego , "}],
+  "config_global": {
+    "idioma": "es",
+    "unidad_tiempo": "segundos"
+  }
+}
 
-### 8. List Models with Sorting (Client)
-# Options: createdAt:desc, createdAt:asc, name:asc, name:desc
-GET {{API_URL}}/api/models/client/models?sort=name:asc
+
+### 10. Extract Model with Multiple Models
+POST {{API_URL}}/api/models/client/extract??saludo=1d8d5dcf-50fc-475f-b67e-9c0d3be3f12e&despedida=d8b79506-7eda-400c-adea-aa355c25608d
+Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 
-
-### 9. List Models with Specific Fields (Client)
-GET {{API_URL}}/api/models/client/models?fields=id,name,modelTypeId
-Authorization: {{BASIC_AUTH}}
-
-
-### 10. List Models with All Filters (Client)
-GET {{API_URL}}/api/models/client/models?modelTypeId={{MODEL_TYPE_ID}}&search=test&limit=20&offset=0&sort=createdAt:desc&fields=id,name,data
-Authorization: {{BASIC_AUTH}}
-
-
-### 11. Get Model by ID (Client)
-GET {{API_URL}}/api/models/client/models/{{MODEL_ID}}
-Authorization: {{BASIC_AUTH}}
+{
+  "transcripcion": {
+    "segments": [
+      {
+        "speaker": "agent",
+        "text": "Bienvenido a nuestra empresa, soy María.",
+        "start": 0,
+        "end": 3
+      }
+    ]
+  },
+  "config_global": {
+    "enableValidation": true
+  }
+}
 
 
 ##################################################
 ### EXAMPLES WITH REAL VALUES
 ##################################################
 
-### Example: Create Model with real IDs
-POST {{API_URL}}/api/models/admin/models
+### Example 1: Create Sentiment Analysis Model
+POST {{API_URL}}/api/models
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "iPhone 15 Pro",
-  "modelTypeId": "123e4567-e89b-12d3-a456-426614174000",
-  "clientId": "987fcdeb-51a2-43f7-8765-123456789abc",
+  "name": "Análisis de Sentimiento",
+  "description": "Detecta el sentimiento general de la conversación (positivo, negativo, neutral)",
+  "modelTypeId": "{{MODEL_TYPE_ID}}",
+  "clientId": "{{CLIENT_ID}}",
   "data": {
-    "color": "Titanium Blue",
-    "storage": "256GB",
-    "processor": "A17 Pro"
+    "template": {
+      "templateName": "sentiment_analysis",
+      "modules": [
+        {
+          "key": "sentiment",
+          "enabled": true,
+          "config": {
+            "detectar": true,
+            "niveles": ["positivo", "neutral", "negativo"],
+            "umbral_confianza": 0.7
+          }
+        }
+      ]
+    }
   }
 }
 
 
-### Example: Get Models with Basic Auth (replace with actual credentials)
-# To generate Basic Auth: echo -n "username:password" | base64
-GET {{API_URL}}/api/models/client/models
-Authorization: Basic dGVzdGNsaWVudDpwYXNzd29yZDEyMw==
+### Example 2: Create Entity Detection Model
+POST {{API_URL}}/api/models
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Detección de Entidades",
+  "description": "Extrae marcas, productos y empresas mencionadas",
+  "modelTypeId": "{{MODEL_TYPE_ID}}",
+  "clientId": "{{CLIENT_ID}}",
+  "data": {
+    "template": {
+      "templateName": "entity_extraction",
+      "modules": [
+        {
+          "key": "entidades",
+          "enabled": true,
+          "config": {
+            "extraer": true,
+            "tipos": ["marca", "producto", "empresa"],
+            "reglas": {
+              "debe_mencionarse": false,
+              "ventana_inicial_segundos": null
+            }
+          }
+        }
+      ]
+    }
+  }
+}
+
+
+### Example 3: Extract with Real Transcription
+POST {{API_URL}}/api/models/client/extract?lang=es&sentiment_model=abc-123&entity_model=def-456
+Content-Type: application/json
+Authorization: {{BASIC_AUTH}}
+
+{
+  "transcripcion": {
+    "segments": [
+      {
+        "speaker": "agent",
+        "text": "Buenos días, le habla María de TechCorp. ¿En qué puedo ayudarle hoy?",
+        "start": 0,
+        "end": 4.5
+      },
+      {
+        "speaker": "client",
+        "text": "Hola, estoy interesado en el iPhone 15 Pro que vi en su catálogo.",
+        "start": 5,
+        "end": 9.2
+      },
+      {
+        "speaker": "agent",
+        "text": "Excelente elección. El iPhone 15 Pro está disponible en varios colores y capacidades.",
+        "start": 10,
+        "end": 15
+      }
+    ],
+    "duration": 180,
+    "metadata": {
+      "callId": "CALL-2025-001",
+      "date": "2025-11-10T10:30:00Z",
+      "channel": "phone"
+    }
+  },
+  "config_global": {
+    "language": "es",
+    "includeTimestamps": true,
+    "outputFormat": "detailed",
+    "confidence_threshold": 0.75
+  }
+}

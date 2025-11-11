@@ -27,14 +27,23 @@ export class ModelsController {
     // CLIENT (Basic)
     @UseGuards(BasicAuthGuard)
     @Get('client/models')
-    listClient(@Query('modelTypeId') modelTypeId?: string, @Query('search') search?: string, @Query('limit') limit = '50', @Query('offset') offset = '0', @Query('sort') sort = 'createdAt:desc', @Query('fields') fields?: string) {
+    listClient(@Query() paginator: PaginatorDto) {
         // req.user.clientId viene del BasicStrategy
-        return this.service.listForClient({ modelTypeId, search, limit: +limit, offset: +offset, sort, fields });
+        return this.service.listForClient(paginator);
     }
 
     @UseGuards(JwtAuthGuard)
     @Get(':id')
     getClient(@Param('id') id: string) {
         return this.service.getForClient(id); // valida ownership dentro del service
+    }
+
+    @UseGuards(BasicAuthGuard)
+    @Post('client/extract')
+    extractModelForClient(
+        @Body() dto: { transcripcion: any, config_global?: Record<string, any> },
+        @Query() query: Record<string, any>
+    ) {
+        return this.service.extractModelForClient(dto.transcripcion, dto.config_global, query);
     }
 }
