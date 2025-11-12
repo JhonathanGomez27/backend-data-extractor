@@ -106,7 +106,7 @@ export class ModelsService {
         //Join templates from models.data
         const combinedTemplates = models.map(m => m.data.template);
 
-        return this.mergeTemplates(combinedTemplates);
+        // return this.mergeTemplates(combinedTemplates);
 
         const result = await this.openaiService.generateSummary(transcripcion, combinedTemplates, config_global);
 

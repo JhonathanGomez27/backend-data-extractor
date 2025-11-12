@@ -92,7 +92,7 @@ Authorization: {{BASIC_AUTH}}
 
 
 ### 9. Extract Model for Client
-POST {{API_URL}}/api/models/client/extract?saludo=1d8d5dcf-50fc-475f-b67e-9c0d3be3f12e&despedida=d8b79506-7eda-400c-adea-aa355c25608d
+POST {{API_URL}}/api/models/client/extract?voc_model=dfb880d9-36d8-468e-a1d4-f1d83a77389c
 Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 
@@ -107,7 +107,7 @@ Authorization: {{BASIC_AUTH}}
 
 
 ### 10. Extract Model with Multiple Models
-POST {{API_URL}}/api/models/client/extract??saludo=1d8d5dcf-50fc-475f-b67e-9c0d3be3f12e&despedida=d8b79506-7eda-400c-adea-aa355c25608d
+POST {{API_URL}}/api/models/client/extract?voc_model=dfb880d9-36d8-468e-a1d4-f1d83a77389c
 Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 

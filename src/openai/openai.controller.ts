@@ -15,6 +15,6 @@ export class OpenaiController {
   async generateText(
     @Body() body: { goal: string, details?: Record<string, any> }
   ) {
-    return this.openaiService.generateTemplates(body.goal, body.details);
+    return this.openaiService.generatePromt(body.goal);
   }
 } 

@@ -121,6 +121,10 @@ export class OpenaiService {
     - Los arrays deben existir aunque estén vacíos.
   `
 
+  private GENERATE_TEMPLATE_PROMPT = `
+    Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado.
+  `;
+
   constructor(private config: ConfigService) {
     this.client = new OpenAI({
       apiKey: this.config.get<string>('openai.apiKey'),
@@ -194,6 +198,21 @@ export class OpenaiService {
         `Error al parsear la respuesta de OpenAI: ${error.message}\nRespuesta recibida: ${raw}`,
       );
     }
+  }
+
+  async generatePromt(goal: string): Promise<string> {
+    const userPrompt = `Objetivo del usuario: "${goal}"`;
+
+    const response = await this.client.chat.completions.create({
+      model: this.contextModel,
+      messages: [
+        { role: 'system', content: this.GENERATE_TEMPLATE_PROMPT },
+        { role: 'user', content: userPrompt },
+      ],
+      temperature: 0.2,
+    });
+
+    return response.choices[0].message?.content || '';
   }
 
 }

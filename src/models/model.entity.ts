@@ -29,6 +29,9 @@ export class ModelEntity {
   @ManyToOne(() => ClientEntity, (c) => c.models, { onDelete: 'CASCADE' })
   client: ClientEntity;
 
+  @Column({ type: 'enum', enum: ['active', 'inactive'], default: 'active' })
+  status: 'active' | 'inactive';
+
   @Index()
   @Column({ type: 'uuid' })
   modelTypeId: string;
