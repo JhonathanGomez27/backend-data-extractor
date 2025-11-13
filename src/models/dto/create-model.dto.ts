@@ -10,4 +10,6 @@ export class CreateModelDto {
   @IsUUID() clientId: string;
 
   @IsOptional() @IsObject() data?: Record<string, any>;
+
+  @IsOptional() @IsString() status?: 'active' | 'inactive'; 
 }

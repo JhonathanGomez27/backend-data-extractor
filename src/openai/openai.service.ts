@@ -205,4 +205,31 @@ export class OpenaiService {
       prompt: response.choices[0].message?.content || '',
     };
   }
+
+  async generateExtraction(prompt: string, transcripcion: any): Promise<{ response: any }> {
+
+    const userPrompt = `Aplica el siguiente prompt al siguiente texto de transcripción y elimina cualquier texto que este antes o despues de la estructura json\n\nPrompt: ${prompt}\nTranscripción: ${JSON.stringify(transcripcion)}`;
+
+    const response = await this.client.chat.completions.create({
+      model: this.summaryModel,
+      messages: [
+        { role: 'user', content: JSON.stringify({ prompt, transcripcion }) },
+      ],
+      temperature: 0.2,
+    });
+
+    const raw = response.choices[0].message?.content || '';
+
+    // Intentar parsear la respuesta como JSON
+    try {
+      const parsed = JSON.parse(raw);
+
+      // Validar que el JSON tenga la estructura esperada
+      return { response: parsed };
+    } catch (error) {
+      throw new Error(
+        `Error al parsear la respuesta de OpenAI: ${error.message}\nRespuesta recibida: ${raw}`,
+      );
+    }
+  }
 }

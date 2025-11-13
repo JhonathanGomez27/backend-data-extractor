@@ -20,7 +20,7 @@ export class ModelEntity {
   description: string | null;
 
   // Campos genéricos ahora; luego puedes ampliarlos (JSON, metadatos, etc.)
-  @Column({ type: 'jsonb', default: {} }) data: Record<string, any>;
+  @Column({ type: 'jsonb', default: {}, nullable: true }) data: Record<string, any> | null;
 
   @Index()
   @Column({ type: 'uuid' })

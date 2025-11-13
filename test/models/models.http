@@ -92,7 +92,7 @@ Authorization: {{BASIC_AUTH}}
 
 
 ### 9. Extract Model for Client
-POST {{API_URL}}/api/models/client/extract?voc_model=dfb880d9-36d8-468e-a1d4-f1d83a77389c
+POST {{API_URL}}/api/models/client/extract?saludo=c3c6a68e-72b3-48bb-9c4d-ca44777bfe23&user_intention_model=cd4542a9-2386-4b64-b8fc-2b413b336053&despedida=ecc6d34f-308b-4eb6-88fe-5c7e70dcdfdc
 Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 
