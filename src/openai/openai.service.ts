@@ -2,20 +2,6 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
 
-const OUTPUT_SCHEMA = {
-  description: 'string',
-  template: {
-    templateName: 'string',
-    modules: [
-      {
-        key: 'string',
-        enabled: 'boolean',
-        config: 'object',
-      },
-    ],
-  },
-};
-
 @Injectable()
 export class OpenaiService {
   private client: OpenAI;
@@ -119,10 +105,10 @@ export class OpenaiService {
     - Devuelve SOLO el JSON. Sin texto extra.
     - No incluyas campos de módulos no solicitados en la plantilla.
     - Los arrays deben existir aunque estén vacíos.
-  `
+  `;
 
   private GENERATE_TEMPLATE_PROMPT = `
-    Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado.
+    Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado. Devuelve solo el prompt generado sin ningun tipo de explicacion alguna ni texto adicioinal
   `;
 
   constructor(private config: ConfigService) {
@@ -168,13 +154,16 @@ export class OpenaiService {
     }
   }
 
-  async generateSummary(transcripcion: any, templates: any, config_global?: Record<string, any>): Promise<any> {
-
+  async generateSummary(
+    transcripcion: any,
+    templates: any,
+    config_global?: Record<string, any>,
+  ): Promise<any> {
     const userPayload = {
       templates,
       transcripcion,
       config_global: config_global || {},
-    }
+    };
 
     const response = await this.client.chat.completions.create({
       model: this.summaryModel,
@@ -200,7 +189,7 @@ export class OpenaiService {
     }
   }
 
-  async generatePromt(goal: string): Promise<string> {
+  async generatePromt(goal: string): Promise<{ prompt: string }> {
     const userPrompt = `Objetivo del usuario: "${goal}"`;
 
     const response = await this.client.chat.completions.create({
@@ -212,7 +201,8 @@ export class OpenaiService {
       temperature: 0.2,
     });
 
-    return response.choices[0].message?.content || '';
+    return {
+      prompt: response.choices[0].message?.content || '',
+    };
   }
-
 }
