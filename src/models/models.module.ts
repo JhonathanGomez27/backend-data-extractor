@@ -14,4 +14,4 @@ import { OpenaiModule } from 'src/openai/openai.module';
     providers: [ModelsService],
     exports: []
 })
-export class ModelsModule {}
+export class ModelsModule { }

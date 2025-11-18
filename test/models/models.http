@@ -107,7 +107,7 @@ Authorization: {{BASIC_AUTH}}
 
 
 ### 10. Extract Model with Multiple Models
-POST {{API_URL}}/api/models/client/extract?voc_model=dfb880d9-36d8-468e-a1d4-f1d83a77389c
+POST {{API_URL}}/api/models/client/extract
 Content-Type: application/json
 Authorization: {{BASIC_AUTH}}
 

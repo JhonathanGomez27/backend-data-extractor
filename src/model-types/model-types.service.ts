@@ -8,24 +8,24 @@ import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 @Injectable()
 export class ModelTypesService {
 
-    constructor(@InjectRepository(ModelTypeEntity) private repo: Repository<ModelTypeEntity>) {}
+    constructor(@InjectRepository(ModelTypeEntity) private repo: Repository<ModelTypeEntity>) { }
 
     async create(dto: CreateModelTypeDto): Promise<ModelTypeEntity> {
         const modelType = this.repo.create(dto);
         return this.repo.save(modelType);
     }
 
-    async findAll(paginator: PaginatorDto, clientId?: string): Promise<{data: ModelTypeEntity[]; total: number}> {
+    async findAll(paginator: PaginatorDto, clientId?: string): Promise<{ data: ModelTypeEntity[]; total: number }> {
         const skip = (paginator.page - 1) * paginator.limit || 0;
         const limit = paginator.limit || 10;
 
-        if(!clientId) {
+        if (!clientId) {
             const [data, total] = await this.repo.findAndCount({
                 skip,
                 take: limit,
-                where: {clientId: IsNull()},
+                where: { clientId: IsNull() },
             });
-            return {data, total};
+            return { data, total };
         }
 
         const [data, total] = await this.repo.findAndCount({
@@ -33,7 +33,7 @@ export class ModelTypesService {
             take: paginator.limit,
             where: { clientId: clientId },
         });
-        return {data, total};
+        return { data, total };
     }
 
     async listAll(): Promise<ModelTypeEntity[]> {

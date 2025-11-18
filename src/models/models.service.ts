@@ -21,7 +21,7 @@ export class ModelsService {
     @InjectRepository(ModelEntity) private repo: Repository<ModelEntity>,
     @Inject(REQ) private request: any,
     private openaiService: OpenaiService,
-  ) {}
+  ) { }
 
   create(dto: CreateModelDto) {
     // Solo admin (JWT) llega aquí
@@ -49,6 +49,7 @@ export class ModelsService {
         'name',
         'description',
         'clientId',
+        'status',
         'modelTypeId',
         'createdAt',
       ],
@@ -117,35 +118,25 @@ export class ModelsService {
 
   async extractModelForClient(
     transcripcion: any,
-    config_global: Record<string, any> = {},
-    query: Record<string, any>,
+    config_global: Record<string, any> = {}
   ) {
     const clientId = this.request.user?.clientId as string;
 
-    const templates = Object.keys(query)
-      .filter((k) => k !== 'lang')
-      .map((modelName) => ({
-        modelName,
-        modelId: query[modelName],
-      }));
-
-    const getModels = await Promise.all(
-      templates.map((t) =>
-        this.repo.findOne({ where: { id: t.modelId, clientId } }),
-      ),
-    );
-    const models = getModels.filter((m) => m); // Filtrar nulos
+    // Get active models for the client
+    const models = await this.repo.find({
+      where: { clientId, status: 'active' },
+    });
 
     if (models.length === 0) {
-      throw new NotFoundException('No valid models found for extraction');
+      throw new NotFoundException('No active models found for the client');
     }
 
-    let jsonResponse: any = {};
+    const jsonResponse: any = {};
 
-    for(const model of models) {
+    for (const model of models) {
       const response = await this.openaiService.generateExtraction(
         model.description,
-        transcripcion
+        transcripcion,
       );
       jsonResponse[model.name] = response.response;
     }

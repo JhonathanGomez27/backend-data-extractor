@@ -62,12 +62,10 @@ export class ModelsController {
   @Post('client/extract')
   extractModelForClient(
     @Body() dto: { transcripcion: any; config_global?: Record<string, any> },
-    @Query() query: Record<string, any>,
   ) {
     return this.service.extractModelForClient(
       dto.transcripcion,
-      dto.config_global,
-      query,
+      dto.config_global
     );
   }
 }
