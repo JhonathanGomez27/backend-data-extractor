@@ -9,7 +9,7 @@ Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "goal": "Necesito un prompt para generar a partir de una lista de requerimientos un promt bien estructurado para analizar una transcripcion y me responda en un array el json anterior { code: Agent>Requerimiento, label: Requerimiento, detected: true, client: } por cada requerimiento que paso. Los requerimientos son: 1. Detectar si el agente saludó al cliente al inicio de la llamada. 2. Identificar si el agente ofreció un producto o servicio durante la conversación. 3. Verificar si el agente proporcionó información sobre promociones vigentes. 4. Analizar si el agente manejó adecuadamente las objeciones del cliente. 5. Confirmar si el agente cerró la llamada de manera profesional y cortés.ß"
+  "goal": "Necesito un prompt para generar a partir de una lista de requerimientos un promt bien estructurado para analizar una transcripcion y me responda en un array el json anterior { code: Agent>Requerimiento, label: Requerimiento, detected: true, client: } por cada requerimiento que paso. Los requerimientos son: 1. Detectar si el agente saludó al cliente al inicio de la llamada. 2. Identificar si el agente ofreció un producto o servicio durante la conversación. 3. Verificar si el agente proporcionó información sobre promociones vigentes. 4. Analizar si el agente manejó adecuadamente las objeciones del cliente. 5. Confirmar si el agente cerró la llamada de manera profesional y cortés"
 }
 
 
