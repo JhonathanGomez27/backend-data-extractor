@@ -131,17 +131,21 @@ export class ModelsService {
       throw new NotFoundException('No active models found for the client');
     }
 
-    const jsonResponse: any = {};
+    const responses = await Promise.all(
+      models.map(async (model) => {
+        const response = await this.openaiService.generateExtraction(
+          model.description,
+          transcripcion,
+        );
+        return { name: model.name, payload: response.response };
+      }),
+    );
 
-    for (const model of models) {
-      const response = await this.openaiService.generateExtraction(
-        model.description,
-        transcripcion,
-      );
-      jsonResponse[model.name] = response.response;
-    }
+    const result = responses.reduce<Record<string, any>>((acc, item) => {
+      acc[item.name] = item.payload;
+      return acc;
+    }, {});
 
-    const result = jsonResponse;
     return result;
   }
 

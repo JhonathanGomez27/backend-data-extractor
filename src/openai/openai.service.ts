@@ -218,18 +218,112 @@ export class OpenaiService {
       temperature: 0.2,
     });
 
-    const raw = response.choices[0].message?.content || '';
+    const raw = response.choices[0].message?.content?.trim() || '';
+    const sanitized = this.stripCodeFences(raw);
 
-    // Intentar parsear la respuesta como JSON
+    const parsed = this.parsePossiblyChunkedJson(sanitized);
+    return { response: parsed };
+  }
+
+  private stripCodeFences(payload: string): string {
+    if (!payload.startsWith('```')) return payload;
+    const lines = payload.split('\n');
+    // remove opening fence and optional language tag
+    lines.shift();
+    // remove closing fence if present
+    if (lines[lines.length - 1].trim() === '```') {
+      lines.pop();
+    }
+    return lines.join('\n').trim();
+  }
+
+  private parsePossiblyChunkedJson(payload: string): any {
+    const direct = this.tryParseJson(payload);
+    if (direct.success) return direct.value;
+
+    const chunkValues = this.extractJsonChunks(payload);
+    if (chunkValues.length === 1) return chunkValues[0];
+    if (chunkValues.length > 1) return chunkValues;
+
+    throw new Error(
+      `Error al parsear la respuesta de OpenAI: ${direct.error}\nRespuesta recibida: ${payload}`,
+    );
+  }
+
+  private extractJsonChunks(payload: string): any[] {
+    const trimmed = payload.trim();
+    if (!trimmed) return [];
+
+    const results: any[] = [];
+    let current = '';
+    let depth = 0;
+    let inString = false;
+    let escapeNext = false;
+
+    for (let i = 0; i < trimmed.length; i++) {
+      const char = trimmed[i];
+
+      if (depth === 0) {
+        if (/\s/.test(char)) {
+          continue;
+        }
+
+        if (char === '{' || char === '[') {
+          current = char;
+          depth = 1;
+          inString = false;
+          escapeNext = false;
+          continue;
+        }
+
+        // ignorar cualquier basura fuera de JSON
+        continue;
+      }
+
+      current += char;
+
+      if (escapeNext) {
+        escapeNext = false;
+        continue;
+      }
+
+      if (char === '\\' && inString) {
+        escapeNext = true;
+        continue;
+      }
+
+      if (char === '"') {
+        inString = !inString;
+        continue;
+      }
+
+      if (inString) continue;
+
+      if (char === '{' || char === '[') {
+        depth++;
+      } else if (char === '}' || char === ']') {
+        depth--;
+
+        if (depth === 0) {
+          const parsed = this.tryParseJson(current.trim());
+          if (parsed.success) {
+            results.push(parsed.value);
+          } else {
+            throw new Error(parsed.error ?? 'No se pudo parsear un fragmento JSON');
+          }
+          current = '';
+        }
+      }
+    }
+
+    return results;
+  }
+
+  private tryParseJson(input: string): { success: boolean; value?: any; error?: string } {
     try {
-      const parsed = JSON.parse(raw);
-
-      // Validar que el JSON tenga la estructura esperada
-      return { response: parsed };
-    } catch (error) {
-      throw new Error(
-        `Error al parsear la respuesta de OpenAI: ${error.message}\nRespuesta recibida: ${raw}`,
-      );
+      return { success: true, value: JSON.parse(input) };
+    } catch (err) {
+      return { success: false, error: (err as Error).message };
     }
   }
 }

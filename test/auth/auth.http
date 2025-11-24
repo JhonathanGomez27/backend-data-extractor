@@ -9,8 +9,8 @@ POST {{API_URL}}/api/auth/login
 Content-Type: application/json
 
 {
-  "email": "admin@example.com",
-  "password": "admin123"
+  "email": "admin@extractor.com",
+  "password": "mlgJ3LR7Z67K"
 }
 
 
