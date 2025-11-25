@@ -1,5 +1,5 @@
 ### Variables
-@API_URL = http://52.5.255.229:3001
+@API_URL = http://localhost:3000
 @TOKEN = your_jwt_token_here
 @CLIENT_ID = 17e38111-0fb1-4236-806a-666a53bee2ab
 @MODEL_TYPE_ID = e3ebad38-cb97-4bf3-83e0-ccc229e599d1

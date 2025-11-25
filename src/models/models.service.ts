@@ -124,7 +124,7 @@ export class ModelsService {
 
     // Get active models for the client
     const models = await this.repo.find({
-      where: { clientId, status: 'active' },
+      where: { clientId, status: 'active' }, relations: ['modelType']
     });
 
     if (models.length === 0) {
@@ -137,7 +137,7 @@ export class ModelsService {
           model.description,
           transcripcion,
         );
-        return { name: model.name, payload: response.response };
+        return { name: model.modelType.name, payload: response.response };
       }),
     );
 
