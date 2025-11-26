@@ -32,6 +32,10 @@ export class ModelsService {
     const model = await this.repo.findOne({ where: { id } });
     if (!model) throw new NotFoundException();
     Object.assign(model, dto);
+
+    //update timestamp
+    model.updatedAt = new Date();
+
     return this.repo.save(model);
   }
 
@@ -52,6 +56,7 @@ export class ModelsService {
         'status',
         'modelTypeId',
         'createdAt',
+        'updatedAt'
       ],
       relations: ['modelType'],
       order: { createdAt: 'DESC' },
