@@ -1,4 +1,4 @@
-import { Inject, Injectable, NotFoundException, Scope } from '@nestjs/common';
+import { Inject, Injectable, NotFoundException, Scope, Logger } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { ModelEntity } from './model.entity';
 import { FindOptionsWhere, ILike, Repository } from 'typeorm';
@@ -6,6 +6,7 @@ import { REQUEST as REQ } from '@nestjs/core';
 import { CreateModelDto } from './dto/create-model.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 import { OpenaiService } from 'src/openai/openai.service';
+import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
 
 type ModuleDef = {
   key: string;
@@ -17,10 +18,13 @@ type Template = { templateName: string; modules: ModuleDef[] };
 
 @Injectable({ scope: Scope.REQUEST })
 export class ModelsService {
+  private readonly logger = new Logger(ModelsService.name);
+
   constructor(
     @InjectRepository(ModelEntity) private repo: Repository<ModelEntity>,
     @Inject(REQ) private request: any,
     private openaiService: OpenaiService,
+    private extractionLogsService: ExtractionLogsService,
   ) { }
 
   create(dto: CreateModelDto) {
@@ -126,32 +130,101 @@ export class ModelsService {
     config_global: Record<string, any> = {}
   ) {
     const clientId = this.request.user?.clientId as string;
+    const startTime = Date.now();
 
-    // Get active models for the client
-    const models = await this.repo.find({
-      where: { clientId, status: 'active' }, relations: ['modelType']
-    });
+    this.logger.log(`Starting extraction for client: ${clientId}`);
 
-    if (models.length === 0) {
-      throw new NotFoundException('No active models found for the client');
+    try {
+      // Get active models for the client
+      const models = await this.repo.find({
+        where: { clientId, status: 'active' }, relations: ['modelType']
+      });
+
+      if (models.length === 0) {
+        throw new NotFoundException('No active models found for the client');
+      }
+
+      this.logger.log(`Found ${models.length} active models for client ${clientId}`);
+
+      // Calcular tamaño de la transcripción
+      const transcriptionSize = JSON.stringify(transcripcion).length;
+
+      const responses = await Promise.all(
+        models.map(async (model) => {
+          this.logger.debug(`Processing model: ${model.name} (${model.id})`);
+          const response = await this.openaiService.generateExtraction(
+            model.description,
+            transcripcion,
+          );
+          return { name: model.modelType.name, payload: response.response };
+        }),
+      );
+
+      const result = responses.reduce<Record<string, any>>((acc, item) => {
+        acc[item.name] = item.payload;
+        return acc;
+      }, {});
+
+      const durationMs = Date.now() - startTime;
+
+      // Guardar log exitoso
+      await this.extractionLogsService.createLog({
+        clientId,
+        modelsUsed: models.map((m) => ({
+          id: m.id,
+          name: m.name,
+          description: m.description,
+        })),
+        transcriptionSize,
+        durationMs,
+        status: 'success',
+        response: result,
+        metadata: {
+          modelCount: models.length,
+          responseKeys: Object.keys(result),
+        },
+      });
+
+      this.logger.log(`Extraction completed successfully for client ${clientId} in ${durationMs}ms`);
+
+      return result;
+    } catch (error) {
+      const durationMs = Date.now() - startTime;
+      const transcriptionSize = JSON.stringify(transcripcion).length;
+
+      this.logger.error(`Extraction failed for client ${clientId}: ${error.message}`, error.stack);
+
+      // Intentar obtener modelos para el log de error
+      let modelsUsed = [];
+      try {
+        const models = await this.repo.find({
+          where: { clientId, status: 'active' },
+        });
+        modelsUsed = models.map((m) => ({
+          id: m.id,
+          name: m.name,
+          description: m.description,
+        }));
+      } catch (e) {
+        this.logger.warn('Could not retrieve models for error log');
+      }
+
+      // Guardar log de error
+      await this.extractionLogsService.createLog({
+        clientId,
+        modelsUsed,
+        transcriptionSize,
+        durationMs,
+        status: 'error',
+        errorMessage: error.message,
+        metadata: {
+          errorStack: error.stack,
+          errorName: error.name,
+        },
+      });
+
+      throw error;
     }
-
-    const responses = await Promise.all(
-      models.map(async (model) => {
-        const response = await this.openaiService.generateExtraction(
-          model.description,
-          transcripcion,
-        );
-        return { name: model.modelType.name, payload: response.response };
-      }),
-    );
-
-    const result = responses.reduce<Record<string, any>>((acc, item) => {
-      acc[item.name] = item.payload;
-      return acc;
-    }, {});
-
-    return result;
   }
 
   mergeTemplates(templates: Template[]): Template {

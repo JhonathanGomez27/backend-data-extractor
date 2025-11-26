@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { DatabaseModule } from './common/database/database.module';
 import { OpenaiModule } from './openai/openai.module';
+import { ExtractionLogsModule } from './extraction-logs/extraction-logs.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { OpenaiModule } from './openai/openai.module';
     ModelTypesModule,
     ModelsModule,
     OpenaiModule,
+    ExtractionLogsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

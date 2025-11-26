@@ -1,0 +1,47 @@
+### Variables
+@API_URL = http://localhost:3000
+@TOKEN = your_jwt_token_here
+@CLIENT_ID = your_client_id_here
+@BASIC_AUTH = Basic your_basic_auth_here
+
+
+##################################################
+### ADMIN ENDPOINTS (JWT Authentication)
+##################################################
+
+### 1. Get Extraction Logs for a Client (Admin)
+GET {{API_URL}}/api/extraction-logs/admin?clientId={{CLIENT_ID}}&limit=50
+Authorization: Bearer {{TOKEN}}
+
+
+### 2. Get Extraction Stats for a Client (Admin)
+GET {{API_URL}}/api/extraction-logs/admin/stats?clientId={{CLIENT_ID}}
+Authorization: Bearer {{TOKEN}}
+
+
+### 3. Get All Recent Logs (Admin)
+GET {{API_URL}}/api/extraction-logs/admin?clientId={{CLIENT_ID}}&limit=100
+Authorization: Bearer {{TOKEN}}
+
+
+##################################################
+### CLIENT ENDPOINTS (Basic Authentication)
+##################################################
+
+### 4. Get Own Extraction Logs (Client)
+GET {{API_URL}}/api/extraction-logs/client/logs?limit=20
+Authorization: {{BASIC_AUTH}}
+
+
+### 5. Get Own Extraction Stats (Client)
+GET {{API_URL}}/api/extraction-logs/client/stats
+Authorization: {{BASIC_AUTH}}
+
+
+##################################################
+### EXAMPLES
+##################################################
+
+### Example: View logs with custom limit
+GET {{API_URL}}/api/extraction-logs/admin?clientId=17e38111-0fb1-4236-806a-666a53bee2ab&limit=10
+Authorization: Bearer {{TOKEN}}
