@@ -31,6 +31,9 @@ export class ExtractionLogEntity {
   @Column({ type: 'jsonb', nullable: true })
   metadata: Record<string, any>; // Para información adicional
 
+  @Column({ type: 'varchar', nullable: true })
+  audio_source_value: string;
+
   @Column({ type: 'jsonb', nullable: true })
   response: Record<string, any>; // Respuesta completa de la extracción
 

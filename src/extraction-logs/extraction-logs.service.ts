@@ -12,6 +12,7 @@ export interface CreateExtractionLogDto {
   errorMessage?: string;
   metadata?: Record<string, any>;
   response?: Record<string, any>;
+  audio_source_value?: string;
 }
 
 @Injectable()
@@ -19,7 +20,7 @@ export class ExtractionLogsService {
   constructor(
     @InjectRepository(ExtractionLogEntity)
     private readonly logRepo: Repository<ExtractionLogEntity>,
-  ) {}
+  ) { }
 
   async createLog(dto: CreateExtractionLogDto): Promise<ExtractionLogEntity> {
     const log = this.logRepo.create(dto);
@@ -41,7 +42,7 @@ export class ExtractionLogsService {
     avgDurationMs: number;
   }> {
     const logs = await this.logRepo.find({ where: { clientId } });
-    
+
     const totalExtractions = logs.length;
     const successCount = logs.filter((l) => l.status === 'success').length;
     const errorCount = logs.filter((l) => l.status === 'error').length;

@@ -16,7 +16,7 @@ import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 
 @Controller('models')
 export class ModelsController {
-  constructor(private service: ModelsService) {}
+  constructor(private service: ModelsService) { }
 
   // ADMIN
   @UseGuards(JwtAuthGuard)
@@ -61,11 +61,11 @@ export class ModelsController {
   @UseGuards(BasicAuthGuard)
   @Post('client/extract')
   extractModelForClient(
-    @Body() dto: { transcripcion: any; config_global?: Record<string, any> },
+    @Body() dto: { transcripcion: any; audio_source_value?: string },
   ) {
     return this.service.extractModelForClient(
       dto.transcripcion,
-      dto.config_global
+      dto.audio_source_value
     );
   }
 }

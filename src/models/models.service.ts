@@ -127,7 +127,7 @@ export class ModelsService {
 
   async extractModelForClient(
     transcripcion: any,
-    config_global: Record<string, any> = {}
+    audio_source_value: string
   ) {
     const clientId = this.request.user?.clientId as string;
     const startTime = Date.now();
@@ -152,9 +152,10 @@ export class ModelsService {
       const responses = await Promise.all(
         models.map(async (model) => {
           this.logger.debug(`Processing model: ${model.name} (${model.id})`);
-          const response = await this.openaiService.generateExtraction(
+          const response = await this.retryGenerateExtraction(
             model.description,
             transcripcion,
+            model.name
           );
           return { name: model.modelType.name, payload: response.response };
         }),
@@ -177,6 +178,7 @@ export class ModelsService {
         })),
         transcriptionSize,
         durationMs,
+        audio_source_value,
         status: 'success',
         response: result,
         metadata: {
@@ -215,6 +217,7 @@ export class ModelsService {
         modelsUsed,
         transcriptionSize,
         durationMs,
+        audio_source_value,
         status: 'error',
         errorMessage: error.message,
         metadata: {
@@ -295,5 +298,53 @@ export class ModelsService {
 
   isObject(x: any) {
     return x && typeof x === 'object' && !Array.isArray(x);
+  }
+
+  /**
+   * Retry helper for OpenAI generateExtraction calls
+   * Attempts up to maxRetries times with exponential backoff
+   */
+  private async retryGenerateExtraction(
+    prompt: string,
+    transcripcion: any,
+    model_name: string = '',
+    maxRetries: number = 3,
+  ): Promise<{ response: any }> {
+    let lastError: Error;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        this.logger.debug(`Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction`);
+        const response = await this.openaiService.generateExtraction(
+          prompt,
+          transcripcion,
+        );
+
+        if (attempt > 1) {
+          this.logger.log(`Successfully generated extraction on ${model_name} attempt ${attempt}`);
+        }
+
+        return response;
+      } catch (error) {
+        lastError = error;
+        this.logger.warn(
+          `Attempt ${attempt}/${maxRetries} failed for ${model_name} generateExtraction: ${error.message}`,
+        );
+
+        // If this is not the last attempt, wait before retrying
+        if (attempt < maxRetries) {
+          const delayMs = Math.pow(2, attempt - 1) * 1000; // Exponential backoff: 1s, 2s, 4s
+          this.logger.debug(`Waiting ${delayMs}ms before retry...`);
+          await new Promise(resolve => setTimeout(resolve, delayMs));
+        }
+      }
+    }
+
+    // If all retries failed, throw the last error
+    this.logger.error(
+      `All ${maxRetries} attempts failed for ${model_name} generateExtraction`,
+      lastError.stack,
+    );
+    throw lastError;
   }
 }

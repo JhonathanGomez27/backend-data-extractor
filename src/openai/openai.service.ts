@@ -206,7 +206,7 @@ export class OpenaiService {
     };
   }
 
-  async generateExtraction(prompt: string, transcripcion: any): Promise<{ response: any }> {
+  async generateExtraction(prompt: string, transcripcion: any, model_prompt: string = ''): Promise<{ response: any }> {
 
     const userPrompt = `Aplica el siguiente prompt al siguiente texto de transcripción y elimina cualquier texto que este antes o despues de la estructura json\n\nPrompt: ${prompt}\nTranscripción: ${JSON.stringify(transcripcion)}`;
 
@@ -219,10 +219,85 @@ export class OpenaiService {
     });
 
     const raw = response.choices[0].message?.content?.trim() || '';
-    const sanitized = this.stripCodeFences(raw);
 
-    const parsed = this.parsePossiblyChunkedJson(sanitized);
-    return { response: parsed };
+    // Log raw response for debugging (first 500 chars)
+    console.log(`[OpenAI] Raw response preview for ${model_prompt}: `, raw.substring(0, 500));
+
+    // Sanitize the response
+    const sanitized = this.sanitizeJsonResponse(raw);
+
+    // Log sanitized response for debugging (first 500 chars)
+    console.log(`[OpenAI] Sanitized response preview for ${model_prompt}: `, sanitized.substring(0, 500));
+
+    try {
+      const parsed = this.parsePossiblyChunkedJson(sanitized);
+      return { response: parsed };
+    } catch (error) {
+      // Enhanced error with more context
+      console.error(`[OpenAI] Failed to parse response for ${model_prompt}. Raw response:`, raw);
+      throw new Error(
+        `Error al parsear la respuesta de OpenAI: ${error.message}\n` +
+        `Raw response length: ${raw.length}\n` +
+        `Sanitized response length: ${sanitized.length}\n` +
+        `First 200 chars of sanitized: ${sanitized.substring(0, 200)}`
+      );
+    }
+  }
+
+  private sanitizeJsonResponse(payload: string): string {
+    if (!payload) return payload;
+
+    // Remove BOM and other invisible characters
+    let cleaned = payload.replace(/^\uFEFF/, '').trim();
+
+    // Strip code fences if present
+    cleaned = this.stripCodeFences(cleaned);
+
+    // Remove any leading/trailing text that's not part of JSON
+    // Look for the first { or [ and last } or ]
+    const indexOfBrace = cleaned.indexOf('{');
+    const indexOfBracket = cleaned.indexOf('[');
+
+    // Find the FIRST opening character (Math.min, not Math.max!)
+    let firstBrace = Infinity;
+    if (indexOfBrace >= 0) firstBrace = Math.min(firstBrace, indexOfBrace);
+    if (indexOfBracket >= 0) firstBrace = Math.min(firstBrace, indexOfBracket);
+
+    const lastBrace = Math.max(
+      cleaned.lastIndexOf('}'),
+      cleaned.lastIndexOf(']')
+    );
+
+    if (firstBrace !== Infinity && firstBrace < lastBrace) {
+      cleaned = cleaned.substring(firstBrace, lastBrace + 1);
+    }
+
+    // Fix JavaScript object notation (unquoted keys) to valid JSON
+    cleaned = this.fixJavaScriptObjectNotation(cleaned);
+
+    return cleaned.trim();
+  }
+
+  /**
+   * Converts JavaScript object notation with unquoted keys to valid JSON
+   * Example: {code: "value"} -> {"code": "value"}
+   */
+  private fixJavaScriptObjectNotation(payload: string): string {
+    try {
+      // Try to parse as-is first
+      JSON.parse(payload);
+      return payload; // Already valid JSON
+    } catch (e) {
+      // Not valid JSON, try to fix unquoted keys
+      // This regex finds unquoted keys like: {key: or ,key: or [key:
+      // and replaces them with quoted versions: {"key": or ,"key": or ["key":
+      const fixed = payload.replace(
+        /([{,\[])\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*:/g,
+        '$1"$2":'
+      );
+
+      return fixed;
+    }
   }
 
   private stripCodeFences(payload: string): string {
