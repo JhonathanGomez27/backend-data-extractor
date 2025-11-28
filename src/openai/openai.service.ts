@@ -7,7 +7,7 @@ export class OpenaiService {
   private client: OpenAI;
 
   private readonly contextModel = 'gpt-4.1';
-  private readonly summaryModel = 'gpt-3.5-turbo';
+  private readonly summaryModel = 'gpt-4.1-mini';
   private readonly contextLimit = 1_000_000; // tokens
 
   private TEMPLATE_SYSTEM_PROMPT = `

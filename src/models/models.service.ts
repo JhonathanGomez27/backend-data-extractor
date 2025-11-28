@@ -317,7 +317,7 @@ export class ModelsService {
         this.logger.debug(`Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction`);
         const response = await this.openaiService.generateExtraction(
           prompt,
-          transcripcion,
+          transcripcion
         );
 
         if (attempt > 1) {
