@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import OpenAI from 'openai';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 @Injectable()
 export class OpenaiService {
@@ -111,7 +112,10 @@ export class OpenaiService {
     Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado. Devuelve solo el prompt generado sin ningun tipo de explicacion alguna ni texto adicioinal
   `;
 
-  constructor(private config: ConfigService) {
+  constructor(
+    private config: ConfigService,
+    private telegramService: TelegramService,
+  ) {
     this.client = new OpenAI({
       apiKey: this.config.get<string>('openai.apiKey'),
     });
@@ -130,9 +134,10 @@ export class OpenaiService {
         { role: 'user', content: userPrompt },
       ],
       temperature: 0.2,
+      response_format: { type: 'json_object' },
     });
 
-    const raw = response.choices[0].message?.content || '';
+    const raw = this.getCompletionContent(response);
 
     // Intentar parsear la respuesta como JSON
     try {
@@ -147,7 +152,7 @@ export class OpenaiService {
       } else {
         throw new Error('La respuesta JSON no tiene la estructura esperada.');
       }
-    } catch (error) {
+    } catch (error: any) {
       throw new Error(
         `Error al parsear la respuesta de OpenAI: ${error.message}\nRespuesta recibida: ${raw}`,
       );
@@ -172,9 +177,10 @@ export class OpenaiService {
         { role: 'user', content: JSON.stringify(userPayload) },
       ],
       temperature: 0.2,
+      response_format: { type: 'json_object' },
     });
 
-    const raw = response.choices[0].message?.content || '';
+    const raw = this.getCompletionContent(response);
 
     // Intentar parsear la respuesta como JSON
     try {
@@ -182,7 +188,7 @@ export class OpenaiService {
 
       // Validar que el JSON tenga la estructura esperada
       return parsed;
-    } catch (error) {
+    } catch (error : any) {
       throw new Error(
         `Error al parsear la respuesta de OpenAI: ${error.message}\nRespuesta recibida: ${raw}`,
       );
@@ -202,23 +208,27 @@ export class OpenaiService {
     });
 
     return {
-      prompt: response.choices[0].message?.content || '',
+      prompt: this.getCompletionContent(response),
     };
   }
 
-  async generateExtraction(prompt: string, transcripcion: any, model_prompt: string = ''): Promise<{ response: any }> {
+  async generateExtraction(prompt: string, transcripcion: any, model_prompt: string = '', audio?: string): Promise<{ response: any }> {
 
     const userPrompt = `Aplica el siguiente prompt al siguiente texto de transcripción y elimina cualquier texto que este antes o despues de la estructura json\n\nPrompt: ${prompt}\nTranscripción: ${JSON.stringify(transcripcion)}`;
 
+    const messages: Array<{ role: 'system' | 'user'; content: string }> = [];
+    // if (model_prompt?.trim()) {
+    //   messages.push({ role: 'system', content: model_prompt });
+    // }
+    messages.push({ role: 'user', content: userPrompt });
+
     const response = await this.client.chat.completions.create({
       model: this.summaryModel,
-      messages: [
-        { role: 'user', content: JSON.stringify({ prompt, transcripcion }) },
-      ],
+      messages,
       temperature: 0.2,
     });
 
-    const raw = response.choices[0].message?.content?.trim() || '';
+    const raw = this.getCompletionContent(response).trim();
 
     // Log raw response for debugging (first 500 chars)
     console.log(`[OpenAI] Raw response preview for ${model_prompt}: `, raw.substring(0, 500));
@@ -232,9 +242,25 @@ export class OpenaiService {
     try {
       const parsed = this.parsePossiblyChunkedJson(sanitized);
       return { response: parsed };
-    } catch (error) {
+    } catch (error: any) {
       // Enhanced error with more context
       console.error(`[OpenAI] Failed to parse response for ${model_prompt}. Raw response:`, raw);
+      
+      // Enviar alerta a Telegram por error de parseo
+      await this.telegramService.sendTelegramAlert({
+        title: 'Error al Parsear Respuesta OpenAI',
+        message: `Fallo en generateExtraction para el audio: ${audio || 'sin nombre'}`,
+        error,
+        extra: {
+          modelPrompt: model_prompt,
+          rawResponseLength: raw.length,
+          sanitizedResponseLength: sanitized.length,
+          first200Chars: sanitized.substring(0, 200),
+          promptPreview: prompt.substring(0, 200),
+        },
+        level: 'ERROR',
+      });
+      
       throw new Error(
         `Error al parsear la respuesta de OpenAI: ${error.message}\n` +
         `Raw response length: ${raw.length}\n` +
@@ -400,5 +426,22 @@ export class OpenaiService {
     } catch (err) {
       return { success: false, error: (err as Error).message };
     }
+  }
+
+  private getCompletionContent(response: any): string {
+    const content = response?.choices?.[0]?.message?.content;
+    if (typeof content === 'string') return content;
+    if (Array.isArray(content)) {
+      return content
+        .map((part) => {
+          if (typeof part === 'string') return part;
+          if (part && typeof part === 'object' && 'text' in part) {
+            return String((part as { text?: unknown }).text ?? '');
+          }
+          return '';
+        })
+        .join('');
+    }
+    return '';
   }
 }

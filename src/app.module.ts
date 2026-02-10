@@ -11,6 +11,7 @@ import configuration from './config/configuration';
 import { DatabaseModule } from './common/database/database.module';
 import { OpenaiModule } from './openai/openai.module';
 import { ExtractionLogsModule } from './extraction-logs/extraction-logs.module';
+import { TelegramModule } from './telegram/telegram.module';
 
 @Module({
   imports: [
@@ -27,6 +28,7 @@ import { ExtractionLogsModule } from './extraction-logs/extraction-logs.module';
     ModelsModule,
     OpenaiModule,
     ExtractionLogsModule,
+    TelegramModule,
   ],
   controllers: [AppController],
   providers: [AppService],

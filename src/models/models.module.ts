@@ -5,12 +5,14 @@ import { ModelsController } from './models.controller';
 import { ModelsService } from './models.service';
 import { OpenaiModule } from 'src/openai/openai.module';
 import { ExtractionLogsModule } from 'src/extraction-logs/extraction-logs.module';
+import { TelegramModule } from 'src/telegram/telegram.module';
 
 @Module({
     imports: [
         TypeOrmModule.forFeature([ModelEntity]),
         OpenaiModule,
-        ExtractionLogsModule
+        ExtractionLogsModule,
+        TelegramModule
     ],
     controllers: [ModelsController],
     providers: [ModelsService],

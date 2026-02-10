@@ -7,6 +7,7 @@ import { CreateModelDto } from './dto/create-model.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 import { OpenaiService } from 'src/openai/openai.service';
 import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
+import { TelegramService } from 'src/telegram/telegram.service';
 
 type ModuleDef = {
   key: string;
@@ -25,6 +26,7 @@ export class ModelsService {
     @Inject(REQ) private request: any,
     private openaiService: OpenaiService,
     private extractionLogsService: ExtractionLogsService,
+    private telegramService: TelegramService,
   ) { }
 
   create(dto: CreateModelDto) {
@@ -155,7 +157,9 @@ export class ModelsService {
           const response = await this.retryGenerateExtraction(
             model.description,
             transcripcion,
-            model.name
+            model.name,
+            3,
+            audio_source_value
           );
           return { name: model.modelType.name, payload: response.response };
         }),
@@ -190,7 +194,7 @@ export class ModelsService {
       this.logger.log(`Extraction completed successfully for client ${clientId} in ${durationMs}ms`);
 
       return result;
-    } catch (error) {
+    } catch (error : any) {
       const durationMs = Date.now() - startTime;
       const transcriptionSize = JSON.stringify(transcripcion).length;
 
@@ -224,6 +228,22 @@ export class ModelsService {
           errorStack: error.stack,
           errorName: error.name,
         },
+      });
+
+      // Enviar alerta a Telegram
+      await this.telegramService.sendTelegramAlert({
+        title: 'Error en Extracción de Modelos',
+        message: `Falló la extracción para el cliente ${clientId}`,
+        error,
+        extra: {
+          clientId,
+          audio_source_value,
+          transcriptionSize,
+          durationMs,
+          modelsCount: modelsUsed.length,
+          models: modelsUsed.map(m => m.name).join(', '),
+        },
+        level: 'ERROR',
       });
 
       throw error;
@@ -309,15 +329,18 @@ export class ModelsService {
     transcripcion: any,
     model_name: string = '',
     maxRetries: number = 3,
+    audio_source_value: string = ''
   ): Promise<{ response: any }> {
-    let lastError: Error;
+    let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         this.logger.debug(`Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction`);
         const response = await this.openaiService.generateExtraction(
           prompt,
-          transcripcion
+          transcripcion,
+          null,
+          audio_source_value
         );
 
         if (attempt > 1) {
@@ -325,7 +348,7 @@ export class ModelsService {
         }
 
         return response;
-      } catch (error) {
+      } catch (error: any) {
         lastError = error;
         this.logger.warn(
           `Attempt ${attempt}/${maxRetries} failed for ${model_name} generateExtraction: ${error.message}`,
@@ -341,10 +364,26 @@ export class ModelsService {
     }
 
     // If all retries failed, throw the last error
+    const finalError = lastError || new Error('All retries failed but no error was captured');
+    
     this.logger.error(
       `All ${maxRetries} attempts failed for ${model_name} generateExtraction`,
-      lastError.stack,
+      finalError.stack,
     );
-    throw lastError;
+
+    // Enviar alerta a Telegram por reintentos agotados
+    await this.telegramService.sendTelegramAlert({
+      title: 'Reintentos Agotados - OpenAI Extraction',
+      message: `Fallaron todos los ${maxRetries} intentos para el modelo: ${model_name}`,
+      error: finalError,
+      extra: {
+        modelName: model_name,
+        maxRetries,
+        clientId: this.request.user?.clientId,
+      },
+      level: 'CRITICAL',
+    });
+
+    throw finalError;
   }
 }
