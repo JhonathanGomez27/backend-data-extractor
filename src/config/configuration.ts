@@ -19,7 +19,10 @@ export default () => ({
         password: process.env.ADMIN_PASSWORD || 'adminPassword',
     },
     openai: {
-        apiKey: process.env.OPENAI_API_KEY || 'your_openai_api_key_here'
+        apiKey: process.env.OPENAI_API_KEY || 'your_openai_api_key_here',
+        contextModel: process.env.OPENAI_CONTEXT_MODEL || 'gpt-4.1',
+        summaryModel: process.env.OPENAI_SUMMARY_MODEL || 'gpt-4.1-mini',
+        contextLimit: parseInt(process.env.OPENAI_CONTEXT_LIMIT, 10) || 1_000_000
     },
     telegram: {
         botToken: process.env.TELEGRAM_BOT_TOKEN || 'your_telegram_bot_token_here',

@@ -7,9 +7,9 @@ import { TelegramService } from 'src/telegram/telegram.service';
 export class OpenaiService {
   private client: OpenAI;
 
-  private readonly contextModel = 'gpt-4.1';
-  private readonly summaryModel = 'gpt-4.1-mini';
-  private readonly contextLimit = 1_000_000; // tokens
+  private readonly contextModel: string;
+  private readonly summaryModel: string;
+  private readonly contextLimit: number;
 
   private TEMPLATE_SYSTEM_PROMPT = `
           Eres un generador de plantillas de análisis conversacional para una aplicación de IA. 
@@ -119,6 +119,11 @@ export class OpenaiService {
     this.client = new OpenAI({
       apiKey: this.config.get<string>('openai.apiKey'),
     });
+    
+    // Load OpenAI models from environment variables
+    this.contextModel = this.config.get<string>('openai.contextModel');
+    this.summaryModel = this.config.get<string>('openai.summaryModel');
+    this.contextLimit = this.config.get<number>('openai.contextLimit');
   }
 
   async generateTemplates(
