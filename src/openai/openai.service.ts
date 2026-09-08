@@ -227,11 +227,27 @@ export class OpenaiService {
     // }
     messages.push({ role: 'user', content: userPrompt });
 
-    const response = await this.client.chat.completions.create({
+    const requestBody: any = {
       model: this.summaryModel,
       messages,
-      temperature: 0.2,
-    });
+    };
+
+    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(this.summaryModel);
+    if (!isReasoningOrFixedTempModel) {
+      requestBody.temperature = 0.2;
+    }
+
+    let response: any;
+    try {
+      response = await this.client.chat.completions.create(requestBody);
+    } catch (error: any) {
+      if (error?.message?.includes('temperature') && 'temperature' in requestBody) {
+        delete requestBody.temperature;
+        response = await this.client.chat.completions.create(requestBody);
+      } else {
+        throw error;
+      }
+    }
 
     const raw = this.getCompletionContent(response).trim();
 

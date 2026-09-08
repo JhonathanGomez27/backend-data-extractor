@@ -17,6 +17,9 @@ export class OpenaiProvider implements AiProviderInterface {
   private readonly apiKey: string;
   private readonly defaultModel: string;
   private readonly availableModels = [
+    'gpt-5',
+    'gpt-5-nano',
+    'gpt-5-mini',
     'gpt-4o',
     'gpt-4o-mini',
     'gpt-4.5-preview',
@@ -35,7 +38,7 @@ export class OpenaiProvider implements AiProviderInterface {
   constructor(private config: ConfigService) {
     this.apiKey = this.config.get<string>('openai.apiKey') || '';
     this.defaultModel =
-      this.config.get<string>('openai.summaryModel') || 'gpt-4.1-mini';
+      this.config.get<string>('openai.summaryModel') || 'gpt-4o-mini';
 
     if (this.isAvailable()) {
       this.client = new OpenAI({ apiKey: this.apiKey });
@@ -81,11 +84,31 @@ export class OpenaiProvider implements AiProviderInterface {
       `Generating extraction with OpenAI model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
-    const response = await client.chat.completions.create({
+    const requestBody: any = {
       model: modelToUse,
       messages: [{ role: 'user', content: userPrompt }],
-      temperature: 0.2,
-    });
+    };
+
+    // Models like o1, o3, o4, gpt-5 only support default temperature (1) or reject temperature != 1
+    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
+    if (!isReasoningOrFixedTempModel) {
+      requestBody.temperature = 0.2;
+    }
+
+    let response: any;
+    try {
+      response = await client.chat.completions.create(requestBody);
+    } catch (error: any) {
+      if (error?.message?.includes('temperature') && 'temperature' in requestBody) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete requestBody.temperature;
+        response = await client.chat.completions.create(requestBody);
+      } else {
+        throw error;
+      }
+    }
 
     const raw = this.getCompletionContent(response).trim();
     const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
@@ -107,19 +130,38 @@ export class OpenaiProvider implements AiProviderInterface {
     const modelToUse =
       specificModel ||
       this.config.get<string>('openai.contextModel') ||
-      'gpt-4.1';
+      'gpt-4o-mini';
 
     const systemPrompt =
       'Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado. Devuelve solo el prompt generado sin ningun tipo de explicacion alguna ni texto adicioinal';
 
-    const response = await client.chat.completions.create({
+    const requestBody: any = {
       model: modelToUse,
       messages: [
         { role: 'system', content: systemPrompt },
         { role: 'user', content: `Objetivo del usuario: "${goal}"` },
       ],
-      temperature: 0.2,
-    });
+    };
+
+    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
+    if (!isReasoningOrFixedTempModel) {
+      requestBody.temperature = 0.2;
+    }
+
+    let response: any;
+    try {
+      response = await client.chat.completions.create(requestBody);
+    } catch (error: any) {
+      if (error?.message?.includes('temperature') && 'temperature' in requestBody) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete requestBody.temperature;
+        response = await client.chat.completions.create(requestBody);
+      } else {
+        throw error;
+      }
+    }
 
     return {
       prompt: this.getCompletionContent(response).trim(),
