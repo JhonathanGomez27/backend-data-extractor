@@ -6,6 +6,7 @@ import { REQUEST as REQ } from '@nestjs/core';
 import { CreateModelDto } from './dto/create-model.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 import { OpenaiService } from 'src/openai/openai.service';
+import { AiService } from 'src/ai/ai.service';
 import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 
@@ -25,6 +26,7 @@ export class ModelsService {
     @InjectRepository(ModelEntity) private repo: Repository<ModelEntity>,
     @Inject(REQ) private request: any,
     private openaiService: OpenaiService,
+    private aiService: AiService,
     private extractionLogsService: ExtractionLogsService,
     private telegramService: TelegramService,
   ) { }
@@ -61,6 +63,8 @@ export class ModelsService {
         'clientId',
         'status',
         'modelTypeId',
+        'provider',
+        'aiModel',
         'createdAt',
         'updatedAt'
       ],
@@ -76,6 +80,10 @@ export class ModelsService {
       page,
       limit,
     };
+  }
+
+  getAiProviders() {
+    return this.aiService.getProvidersInfo();
   }
 
   async listAdmin({ clientId }: { clientId?: string }) {
@@ -102,6 +110,8 @@ export class ModelsService {
         'description',
         'clientId',
         'modelTypeId',
+        'provider',
+        'aiModel',
         'createdAt',
       ],
       order: { createdAt: 'DESC' },
@@ -119,8 +129,12 @@ export class ModelsService {
 
   async getForClient(id: string) {
     const clientId = this.request.user?.clientId as string;
+    const where: FindOptionsWhere<ModelEntity> = { id };
+    if (clientId) {
+      where.clientId = clientId;
+    }
     const m = await this.repo.findOne({
-      where: { id, clientId },
+      where,
       relations: ['modelType'],
     });
     if (!m) throw new NotFoundException();
@@ -153,13 +167,17 @@ export class ModelsService {
 
       const responses = await Promise.all(
         models.map(async (model) => {
-          this.logger.debug(`Processing model: ${model.name} (${model.id})`);
+          this.logger.debug(
+            `Processing model: ${model.name} (${model.id}) with provider: ${model.provider || 'default'} (model: ${model.aiModel || 'default'})`,
+          );
           const response = await this.retryGenerateExtraction(
             model.description,
             transcripcion,
             model.name,
             3,
-            audio_source_value
+            audio_source_value,
+            model.provider,
+            model.aiModel,
           );
           return { name: model.modelType.name, payload: response.response };
         }),
@@ -179,6 +197,8 @@ export class ModelsService {
           id: m.id,
           name: m.name,
           description: m.description,
+          provider: m.provider,
+          aiModel: m.aiModel,
         })),
         transcriptionSize,
         durationMs,
@@ -188,6 +208,9 @@ export class ModelsService {
         metadata: {
           modelCount: models.length,
           responseKeys: Object.keys(result),
+          providersUsed: Array.from(
+            new Set(models.map((m) => m.provider || 'openai')),
+          ),
         },
       });
 
@@ -321,7 +344,7 @@ export class ModelsService {
   }
 
   /**
-   * Retry helper for OpenAI generateExtraction calls
+   * Retry helper for AI generateExtraction calls across providers (OpenAI, Gemini, Claude)
    * Attempts up to maxRetries times with exponential backoff
    */
   private async retryGenerateExtraction(
@@ -329,55 +352,69 @@ export class ModelsService {
     transcripcion: any,
     model_name: string = '',
     maxRetries: number = 3,
-    audio_source_value: string = ''
+    audio_source_value: string = '',
+    provider?: 'openai' | 'gemini' | 'claude',
+    aiModel?: string,
   ): Promise<{ response: any }> {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
-        this.logger.debug(`Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction`);
-        const response = await this.openaiService.generateExtraction(
-          prompt,
-          transcripcion,
-          null,
-          audio_source_value
+        this.logger.debug(
+          `Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction via ${provider || 'default'}`,
+        );
+        const result = await this.aiService.generateExtraction(
+          {
+            prompt,
+            transcription: transcripcion,
+            modelName: model_name,
+            audioSource: audio_source_value,
+            specificModel: aiModel,
+          },
+          provider,
+          aiModel,
         );
 
         if (attempt > 1) {
-          this.logger.log(`Successfully generated extraction on ${model_name} attempt ${attempt}`);
+          this.logger.log(
+            `Successfully generated extraction on ${model_name} attempt ${attempt} (${result.provider}/${result.model})`,
+          );
         }
 
-        return response;
+        return { response: result.response };
       } catch (error: any) {
         lastError = error;
         this.logger.warn(
-          `Attempt ${attempt}/${maxRetries} failed for ${model_name} generateExtraction: ${error.message}`,
+          `Attempt ${attempt}/${maxRetries} failed for ${model_name} generateExtraction (${provider || 'default'}): ${error.message}`,
         );
 
         // If this is not the last attempt, wait before retrying
         if (attempt < maxRetries) {
           const delayMs = Math.pow(2, attempt - 1) * 1000; // Exponential backoff: 1s, 2s, 4s
           this.logger.debug(`Waiting ${delayMs}ms before retry...`);
-          await new Promise(resolve => setTimeout(resolve, delayMs));
+          await new Promise((resolve) => setTimeout(resolve, delayMs));
         }
       }
     }
 
     // If all retries failed, throw the last error
-    const finalError = lastError || new Error('All retries failed but no error was captured');
-    
+    const finalError =
+      lastError || new Error('All retries failed but no error was captured');
+
     this.logger.error(
-      `All ${maxRetries} attempts failed for ${model_name} generateExtraction`,
+      `All ${maxRetries} attempts failed for ${model_name} generateExtraction via ${provider || 'default'}`,
       finalError.stack,
     );
 
     // Enviar alerta a Telegram por reintentos agotados
     await this.telegramService.sendTelegramAlert({
-      title: 'Reintentos Agotados - OpenAI Extraction',
-      message: `Fallaron todos los ${maxRetries} intentos para el modelo: ${model_name}`,
+      title: 'Reintentos Agotados - AI Extraction',
+      message: `Fallaron todos los ${maxRetries} intentos para el modelo: ${model_name} (Proveedor: ${provider || 'default'})`,
       error: finalError,
       extra: {
         modelName: model_name,
+        provider: provider || 'default',
+        aiModel: aiModel || 'default',
         maxRetries,
         clientId: this.request.user?.clientId,
       },

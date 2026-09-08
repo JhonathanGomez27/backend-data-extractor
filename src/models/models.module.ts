@@ -4,6 +4,7 @@ import { ModelEntity } from './model.entity';
 import { ModelsController } from './models.controller';
 import { ModelsService } from './models.service';
 import { OpenaiModule } from 'src/openai/openai.module';
+import { AiModule } from 'src/ai/ai.module';
 import { ExtractionLogsModule } from 'src/extraction-logs/extraction-logs.module';
 import { TelegramModule } from 'src/telegram/telegram.module';
 
@@ -11,6 +12,7 @@ import { TelegramModule } from 'src/telegram/telegram.module';
     imports: [
         TypeOrmModule.forFeature([ModelEntity]),
         OpenaiModule,
+        AiModule,
         ExtractionLogsModule,
         TelegramModule
     ],

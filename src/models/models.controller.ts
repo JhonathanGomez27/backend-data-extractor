@@ -53,6 +53,12 @@ export class ModelsController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @Get('ai-providers')
+  getAiProviders() {
+    return this.service.getAiProviders();
+  }
+
+  @UseGuards(JwtAuthGuard)
   @Get(':id')
   getClient(@Param('id') id: string) {
     return this.service.getForClient(id); // valida ownership dentro del service

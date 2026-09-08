@@ -22,6 +22,12 @@ export class ModelEntity {
   // Campos genéricos ahora; luego puedes ampliarlos (JSON, metadatos, etc.)
   @Column({ type: 'jsonb', default: {}, nullable: true }) data: Record<string, any> | null;
 
+  @Column({ type: 'varchar', default: 'openai' })
+  provider: 'openai' | 'gemini' | 'claude';
+
+  @Column({ type: 'varchar', nullable: true })
+  aiModel: string | null;
+
   @Index()
   @Column({ type: 'uuid' })
   clientId: string;

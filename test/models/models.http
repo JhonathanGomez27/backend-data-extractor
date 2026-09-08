@@ -13,16 +13,105 @@
 ### ADMIN ENDPOINTS (JWT Authentication)
 ##################################################
 
-### 1. Create Model (Admin)
+### 0. List Available AI Providers and Models
+GET {{API_URL}}/api/models/ai-providers
+Authorization: Bearer {{TOKEN}}
+
+
+### 1. Create Model (Admin with Gemini)
 POST {{API_URL}}/api/models
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
-  "name": "Menciona la marca al contestar",
+  "name": "Menciona la marca al contestar (Gemini)",
   "description": "Detectar si se menciona la marca del producto o servicio en la conversación.",
   "modelTypeId": "{{MODEL_TYPE_ID}}",
   "clientId": "{{CLIENT_ID}}",
+  "provider": "gemini",
+  "aiModel": "gemini-3.7-flash",
+  "data": {
+    "template": {
+      "templateName": "deteccion_marca_producto_servicio",
+      "modules": [
+        {
+          "key": "entidades",
+          "enabled": true,
+          "config": {
+            "extraer": true,
+            "tipos": [
+              "marca"
+            ],
+            "reglas": {
+              "debe_mencionarse": true,
+              "ventana_inicial_segundos": 0,
+              "coincidencia": {
+                "modo": "parcial",
+                "case_sensitive": false
+              },
+              "sinonimos": []
+            }
+          }
+        }
+      ]
+    }
+  } 
+}
+
+
+### 1b. Create Model (Admin with Claude)
+POST {{API_URL}}/api/models
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Menciona la marca al contestar (Claude)",
+  "description": "Detectar si se menciona la marca del producto o servicio en la conversación.",
+  "modelTypeId": "{{MODEL_TYPE_ID}}",
+  "clientId": "{{CLIENT_ID}}",
+  "provider": "claude",
+  "aiModel": "claude-3-5-haiku-20241022",
+  "data": {
+    "template": {
+      "templateName": "deteccion_marca_producto_servicio",
+      "modules": [
+        {
+          "key": "entidades",
+          "enabled": true,
+          "config": {
+            "extraer": true,
+            "tipos": [
+              "marca"
+            ],
+            "reglas": {
+              "debe_mencionarse": true,
+              "ventana_inicial_segundos": 0,
+              "coincidencia": {
+                "modo": "parcial",
+                "case_sensitive": false
+              },
+              "sinonimos": []
+            }
+          }
+        }
+      ]
+    }
+  } 
+}
+
+
+### 1c. Create Model (Admin with OpenAI)
+POST {{API_URL}}/api/models
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+{
+  "name": "Menciona la marca al contestar (OpenAI)",
+  "description": "Detectar si se menciona la marca del producto o servicio en la conversación.",
+  "modelTypeId": "{{MODEL_TYPE_ID}}",
+  "clientId": "{{CLIENT_ID}}",
+  "provider": "openai",
+  "aiModel": "gpt-4.1-mini",
   "data": {
     "template": {
       "templateName": "deteccion_marca_producto_servicio",

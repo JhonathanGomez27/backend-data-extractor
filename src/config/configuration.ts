@@ -18,11 +18,22 @@ export default () => ({
         email: process.env.ADMIN_USERNAME || 'admin@example.com',
         password: process.env.ADMIN_PASSWORD || 'adminPassword',
     },
+    ai: {
+        defaultProvider: process.env.DEFAULT_AI_PROVIDER || 'openai',
+    },
     openai: {
         apiKey: process.env.OPENAI_API_KEY || 'your_openai_api_key_here',
         contextModel: process.env.OPENAI_CONTEXT_MODEL || 'gpt-4.1',
         summaryModel: process.env.OPENAI_SUMMARY_MODEL || 'gpt-4.1-mini',
         contextLimit: parseInt(process.env.OPENAI_CONTEXT_LIMIT, 10) || 1_000_000
+    },
+    gemini: {
+        apiKey: process.env.GEMINI_API_KEY || '',
+        defaultModel: process.env.GEMINI_DEFAULT_MODEL || 'gemini-3.7-flash',
+    },
+    anthropic: {
+        apiKey: process.env.ANTHROPIC_API_KEY || '',
+        defaultModel: process.env.ANTHROPIC_DEFAULT_MODEL || 'claude-3-5-haiku-20241022',
     },
     telegram: {
         botToken: process.env.TELEGRAM_BOT_TOKEN || 'your_telegram_bot_token_here',

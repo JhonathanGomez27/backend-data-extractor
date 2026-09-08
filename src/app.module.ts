@@ -10,6 +10,7 @@ import { ConfigModule } from '@nestjs/config';
 import configuration from './config/configuration';
 import { DatabaseModule } from './common/database/database.module';
 import { OpenaiModule } from './openai/openai.module';
+import { AiModule } from './ai/ai.module';
 import { ExtractionLogsModule } from './extraction-logs/extraction-logs.module';
 import { TelegramModule } from './telegram/telegram.module';
 
@@ -27,6 +28,7 @@ import { TelegramModule } from './telegram/telegram.module';
     ModelTypesModule,
     ModelsModule,
     OpenaiModule,
+    AiModule,
     ExtractionLogsModule,
     TelegramModule,
   ],
