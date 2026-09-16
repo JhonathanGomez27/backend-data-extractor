@@ -76,14 +76,37 @@ export class GeminiProvider implements AiProviderInterface {
       `Generating extraction with Gemini model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
-    const response = await client.models.generateContent({
-      model: modelToUse,
-      contents: promptText,
-      config: {
-        temperature: 0.2,
-        responseMimeType: 'application/json',
-      },
-    });
+    const config: any = {
+      temperature: 0.2,
+      responseMimeType: 'application/json',
+    };
+
+    let response: any;
+    try {
+      response = await client.models.generateContent({
+        model: modelToUse,
+        contents: promptText,
+        config,
+      });
+    } catch (error: any) {
+      if (
+        (error?.message?.includes('temperature') ||
+          JSON.stringify(error)?.includes('temperature')) &&
+        'temperature' in config
+      ) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete config.temperature;
+        response = await client.models.generateContent({
+          model: modelToUse,
+          contents: promptText,
+          config,
+        });
+      } else {
+        throw error;
+      }
+    }
 
     const raw = (response.text || '').trim();
     const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
@@ -105,13 +128,36 @@ export class GeminiProvider implements AiProviderInterface {
     const modelToUse = specificModel || this.defaultModel;
     const contents = `Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado. Devuelve solo el prompt generado sin ningun tipo de explicacion alguna ni texto adicional.\n\nObjetivo del usuario: "${goal}"`;
 
-    const response = await client.models.generateContent({
-      model: modelToUse,
-      contents,
-      config: {
-        temperature: 0.2,
-      },
-    });
+    const config: any = {
+      temperature: 0.2,
+    };
+
+    let response: any;
+    try {
+      response = await client.models.generateContent({
+        model: modelToUse,
+        contents,
+        config,
+      });
+    } catch (error: any) {
+      if (
+        (error?.message?.includes('temperature') ||
+          JSON.stringify(error)?.includes('temperature')) &&
+        'temperature' in config
+      ) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete config.temperature;
+        response = await client.models.generateContent({
+          model: modelToUse,
+          contents,
+          config,
+        });
+      } else {
+        throw error;
+      }
+    }
 
     return {
       prompt: (response.text || '').trim(),

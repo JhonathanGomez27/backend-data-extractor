@@ -82,12 +82,36 @@ export class ClaudeProvider implements AiProviderInterface {
       `Generating extraction with Claude model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
-    const message = await client.messages.create({
+    const requestBody: any = {
       model: modelToUse,
       max_tokens: 4096,
-      temperature: 0.2,
       messages: [{ role: 'user', content: userPrompt }],
-    });
+    };
+
+    // Models like claude-sonnet-5, claude-opus-5, or reasoning models deprecate temperature
+    const isFixedTempOrDeprecated = /^(claude-.*-5|claude-5)/i.test(modelToUse);
+    if (!isFixedTempOrDeprecated) {
+      requestBody.temperature = 0.2;
+    }
+
+    let message: any;
+    try {
+      message = await client.messages.create(requestBody);
+    } catch (error: any) {
+      if (
+        (error?.message?.includes('temperature') ||
+          JSON.stringify(error)?.includes('temperature')) &&
+        'temperature' in requestBody
+      ) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete requestBody.temperature;
+        message = await client.messages.create(requestBody);
+      } else {
+        throw error;
+      }
+    }
 
     const raw = this.extractTextFromContent(message.content).trim();
     const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
@@ -110,13 +134,36 @@ export class ClaudeProvider implements AiProviderInterface {
     const systemPrompt =
       'Eres un asistente generador de prompts para mejorar la creacion de estos a partir de un objetivo dado. Devuelve solo el prompt generado sin ningun tipo de explicacion alguna ni texto adicional.';
 
-    const message = await client.messages.create({
+    const requestBody: any = {
       model: modelToUse,
       max_tokens: 2048,
-      temperature: 0.2,
       system: systemPrompt,
       messages: [{ role: 'user', content: `Objetivo del usuario: "${goal}"` }],
-    });
+    };
+
+    const isFixedTempOrDeprecated = /^(claude-.*-5|claude-5)/i.test(modelToUse);
+    if (!isFixedTempOrDeprecated) {
+      requestBody.temperature = 0.2;
+    }
+
+    let message: any;
+    try {
+      message = await client.messages.create(requestBody);
+    } catch (error: any) {
+      if (
+        (error?.message?.includes('temperature') ||
+          JSON.stringify(error)?.includes('temperature')) &&
+        'temperature' in requestBody
+      ) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+        );
+        delete requestBody.temperature;
+        message = await client.messages.create(requestBody);
+      } else {
+        throw error;
+      }
+    }
 
     return {
       prompt: this.extractTextFromContent(message.content).trim(),
