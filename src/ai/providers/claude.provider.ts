@@ -81,8 +81,10 @@ export class ClaudeProvider implements AiProviderInterface {
       `Generating extraction with Claude model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
-    const isThinkingModel =
-      /3-7|sonnet-5|opus-5/i.test(modelToUse);
+    const isAdaptiveThinkingModel =
+      /sonnet-5|opus-5|fable-5|mythos-5|opus-4|sonnet-4|haiku-4/i.test(modelToUse);
+    const isBudgetThinkingModel = /3-7/i.test(modelToUse);
+    const isThinkingModel = isAdaptiveThinkingModel || isBudgetThinkingModel;
 
     const formattedTranscription =
       typeof params.transcription === 'string'
@@ -117,7 +119,15 @@ export class ClaudeProvider implements AiProviderInterface {
       ],
     };
 
-    if (isThinkingModel) {
+    if (isAdaptiveThinkingModel) {
+      requestBody.thinking = {
+        type: 'adaptive',
+      };
+      requestBody.output_config = {
+        effort: 'medium',
+      };
+      // Note: temperature cannot be set when thinking is enabled in Anthropic
+    } else if (isBudgetThinkingModel) {
       requestBody.thinking = {
         type: 'enabled',
         budget_tokens: 2048,
@@ -136,14 +146,19 @@ export class ClaudeProvider implements AiProviderInterface {
     } catch (error: any) {
       const errMsg = error?.message || JSON.stringify(error);
       if (
-        (errMsg.includes('temperature') || errMsg.includes('thinking')) &&
-        ('temperature' in requestBody || 'thinking' in requestBody)
+        (errMsg.includes('temperature') ||
+          errMsg.includes('thinking') ||
+          errMsg.includes('output_config')) &&
+        ('temperature' in requestBody ||
+          'thinking' in requestBody ||
+          'output_config' in requestBody)
       ) {
         this.logger.warn(
           `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with safe defaults.`,
         );
         delete requestBody.temperature;
         delete requestBody.thinking;
+        delete requestBody.output_config;
         requestBody.max_tokens = 4096;
         message = await client.messages.create(requestBody);
       } else {
