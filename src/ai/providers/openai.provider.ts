@@ -112,8 +112,9 @@ export class OpenaiProvider implements AiProviderInterface {
     } else {
       requestBody.temperature = 0.2;
       requestBody.max_tokens = 4096;
-      // Enable json_object response format for supported chat models
-      requestBody.response_format = { type: 'json_object' };
+      // NOTA: NO configuramos response_format: { type: 'json_object' } porque OpenAI
+      // restringe gramaticalmente la salida a objetos {} prohibiendo arrays raíz [].
+      // Con el system prompt y JsonSanitizerUtil soportamos tanto objetos como arrays.
     }
 
     let response: any;
@@ -122,16 +123,13 @@ export class OpenaiProvider implements AiProviderInterface {
     } catch (error: any) {
       const errMsg = error?.message || JSON.stringify(error);
       if (
-        (errMsg.includes('temperature') ||
-          errMsg.includes('response_format') ||
-          errMsg.includes('max_tokens')) &&
-        ('temperature' in requestBody || 'response_format' in requestBody)
+        (errMsg.includes('temperature') || errMsg.includes('max_tokens')) &&
+        'temperature' in requestBody
       ) {
         this.logger.warn(
           `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with standard payload.`,
         );
         delete requestBody.temperature;
-        delete requestBody.response_format;
         response = await client.chat.completions.create(requestBody);
       } else {
         throw error;

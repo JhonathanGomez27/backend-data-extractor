@@ -45,4 +45,14 @@ describe('JsonSanitizerUtil', () => {
     const result = JsonSanitizerUtil.parsePossiblyChunkedJson(sanitized);
     expect(result).toEqual({ result: 'success' });
   });
+
+  it('should parse top-level JSON arrays correctly without turning them into objects', () => {
+    const raw = '[{"code":"IntencionGenerica","label":"IntencionGenerica","relevance":"100"}]';
+    const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
+    const result = JsonSanitizerUtil.parsePossiblyChunkedJson(sanitized);
+    expect(Array.isArray(result)).toBe(true);
+    expect(result).toEqual([
+      { code: 'IntencionGenerica', label: 'IntencionGenerica', relevance: '100' },
+    ]);
+  });
 });
