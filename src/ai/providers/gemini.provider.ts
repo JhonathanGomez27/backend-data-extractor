@@ -70,37 +70,55 @@ export class GeminiProvider implements AiProviderInterface {
   ): Promise<AiExtractionResult> {
     const client = this.getClient();
     const modelToUse = params.specificModel || this.defaultModel;
-    const promptText = `Aplica el siguiente prompt al siguiente texto de transcripción y elimina cualquier texto que este antes o despues de la estructura json\n\nPrompt: ${params.prompt}\nTranscripción: ${JSON.stringify(params.transcription)}`;
 
     this.logger.debug(
       `Generating extraction with Gemini model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
+    const formattedTranscription =
+      typeof params.transcription === 'string'
+        ? params.transcription
+        : JSON.stringify(params.transcription, null, 2);
+
+    const contents = `Transcripción:\n${formattedTranscription}\n\nInstrucciones:\n${params.prompt}\n\nDevuelve exclusivamente el JSON:`;
+
+    const isThinkingModel = /2\.5|3\.7/i.test(modelToUse);
+
     const config: any = {
-      temperature: 0.2,
       responseMimeType: 'application/json',
+      systemInstruction:
+        'Eres un extractor de información estructurada en formato JSON. Responde EXCLUSIVAMENTE con un JSON válido que cumpla las instrucciones dadas. Sin explicaciones ni texto adicional.',
     };
+
+    if (isThinkingModel) {
+      config.thinkingConfig = {
+        thinkingBudget: 2048,
+      };
+    } else {
+      config.temperature = 0.2;
+    }
 
     let response: any;
     try {
       response = await client.models.generateContent({
         model: modelToUse,
-        contents: promptText,
+        contents,
         config,
       });
     } catch (error: any) {
+      const errMsg = error?.message || JSON.stringify(error);
       if (
-        (error?.message?.includes('temperature') ||
-          JSON.stringify(error)?.includes('temperature')) &&
-        'temperature' in config
+        (errMsg.includes('temperature') || errMsg.includes('thinkingConfig')) &&
+        ('temperature' in config || 'thinkingConfig' in config)
       ) {
         this.logger.warn(
-          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+          `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with minimal config.`,
         );
         delete config.temperature;
+        delete config.thinkingConfig;
         response = await client.models.generateContent({
           model: modelToUse,
-          contents: promptText,
+          contents,
           config,
         });
       } else {
@@ -109,6 +127,12 @@ export class GeminiProvider implements AiProviderInterface {
     }
 
     const raw = (response.text || '').trim();
+    if (!raw) {
+      throw new Error(
+        `El modelo Gemini (${modelToUse}) devolvió una respuesta vacía.`,
+      );
+    }
+
     const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
     const parsed = JsonSanitizerUtil.parsePossiblyChunkedJson(sanitized);
 

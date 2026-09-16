@@ -1,9 +1,10 @@
 export class JsonSanitizerUtil {
   static sanitizeJsonResponse(payload: string): string {
-    if (!payload) return payload;
+    if (!payload || typeof payload !== 'string') return '';
 
     // Remove BOM and other invisible characters
     let cleaned = payload.replace(/^\uFEFF/, '').trim();
+    if (!cleaned) return '';
 
     // Strip code fences if present
     cleaned = this.stripCodeFences(cleaned);
@@ -22,14 +23,23 @@ export class JsonSanitizerUtil {
       cleaned.lastIndexOf(']')
     );
 
-    if (firstBrace !== Infinity && firstBrace < lastBrace) {
+    if (firstBrace !== Infinity && lastBrace !== -1 && firstBrace < lastBrace) {
       cleaned = cleaned.substring(firstBrace, lastBrace + 1);
     }
 
     // Fix JavaScript object notation (unquoted keys) to valid JSON
     cleaned = this.fixJavaScriptObjectNotation(cleaned);
 
+    // Remove trailing commas before closing braces/brackets
+    cleaned = this.removeTrailingCommas(cleaned);
+
     return cleaned.trim();
+  }
+
+  static removeTrailingCommas(payload: string): string {
+    if (!payload) return payload;
+    // Remove trailing commas in objects: , } -> } and in arrays: , ] -> ]
+    return payload.replace(/,\s*([}\]])/g, '$1');
   }
 
   static fixJavaScriptObjectNotation(payload: string): string {
@@ -46,30 +56,108 @@ export class JsonSanitizerUtil {
   }
 
   static stripCodeFences(payload: string): string {
-    if (!payload.startsWith('```')) return payload;
-    const lines = payload.split('\n');
-    lines.shift();
-    if (lines[lines.length - 1]?.trim() === '```') {
-      lines.pop();
+    if (!payload) return '';
+    let cleaned = payload.trim();
+    // Check for markdown code blocks anywhere
+    const match = cleaned.match(/```(?:json)?\s*([\s\S]*?)\s*```/i);
+    if (match && match[1]) {
+      return match[1].trim();
     }
-    return lines.join('\n').trim();
+    if (cleaned.startsWith('```')) {
+      const lines = cleaned.split('\n');
+      lines.shift();
+      if (lines[lines.length - 1]?.trim() === '```') {
+        lines.pop();
+      }
+      return lines.join('\n').trim();
+    }
+    return cleaned;
+  }
+
+  static sanitizeUnescapedControlChars(payload: string): string {
+    // Replace unescaped newlines/tabs inside JSON string literals
+    let inString = false;
+    let escaped = false;
+    let result = '';
+
+    for (let i = 0; i < payload.length; i++) {
+      const char = payload[i];
+
+      if (escaped) {
+        result += char;
+        escaped = false;
+        continue;
+      }
+
+      if (char === '\\') {
+        result += char;
+        escaped = true;
+        continue;
+      }
+
+      if (char === '"') {
+        inString = !inString;
+        result += char;
+        continue;
+      }
+
+      if (inString) {
+        if (char === '\n') {
+          result += '\\n';
+        } else if (char === '\r') {
+          result += '\\r';
+        } else if (char === '\t') {
+          result += '\\t';
+        } else {
+          result += char;
+        }
+      } else {
+        result += char;
+      }
+    }
+
+    return result;
   }
 
   static parsePossiblyChunkedJson(payload: string): any {
-    const direct = this.tryParseJson(payload);
+    const trimmed = (payload || '').trim();
+    if (!trimmed) {
+      throw new Error(
+        'Respuesta JSON vacía recibida del modelo de IA (0 caracteres). Verifique si el modelo agotó el límite de tokens o si la respuesta no contuvo texto.',
+      );
+    }
+
+    // 1. Intento directo
+    let direct = this.tryParseJson(trimmed);
     if (direct.success) return direct.value;
 
-    const chunkValues = this.extractJsonChunks(payload);
+    // 2. Intento con limpieza de trailing commas
+    const withoutTrailingCommas = this.removeTrailingCommas(trimmed);
+    direct = this.tryParseJson(withoutTrailingCommas);
+    if (direct.success) return direct.value;
+
+    // 3. Intento con sanitización de caracteres de control dentro de strings
+    const sanitizedControls = this.sanitizeUnescapedControlChars(withoutTrailingCommas);
+    direct = this.tryParseJson(sanitizedControls);
+    if (direct.success) return direct.value;
+
+    // 4. Intento extrayendo fragmentos estructurados balanceados
+    const chunkValues = this.extractJsonChunks(trimmed);
     if (chunkValues.length === 1) return chunkValues[0];
     if (chunkValues.length > 1) return chunkValues;
 
+    // 5. Intento extrayendo fragmentos del texto con caracteres de control sanitizados
+    const chunkValuesSanitized = this.extractJsonChunks(sanitizedControls);
+    if (chunkValuesSanitized.length === 1) return chunkValuesSanitized[0];
+    if (chunkValuesSanitized.length > 1) return chunkValuesSanitized;
+
     throw new Error(
-      `Error al parsear la respuesta JSON: ${direct.error}\nRespuesta recibida: ${payload}`
+      `Error al parsear la respuesta JSON: ${direct.error}\nRespuesta recibida: ${payload}`,
     );
   }
 
   static extractJsonChunks(payload: string): any[] {
-    const trimmed = payload.trim();
+    const trimmed = (payload || '').trim();
     if (!trimmed) return [];
 
     const results: any[] = [];
@@ -119,7 +207,17 @@ export class JsonSanitizerUtil {
         depth--;
 
         if (depth === 0) {
-          const parsed = this.tryParseJson(current.trim());
+          const chunkStr = current.trim();
+          let parsed = this.tryParseJson(chunkStr);
+          if (!parsed.success) {
+            parsed = this.tryParseJson(this.removeTrailingCommas(chunkStr));
+          }
+          if (!parsed.success) {
+            parsed = this.tryParseJson(
+              this.sanitizeUnescapedControlChars(this.removeTrailingCommas(chunkStr)),
+            );
+          }
+
           if (parsed.success) {
             results.push(parsed.value);
           } else {

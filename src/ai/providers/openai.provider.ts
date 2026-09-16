@@ -78,39 +78,81 @@ export class OpenaiProvider implements AiProviderInterface {
   ): Promise<AiExtractionResult> {
     const client = this.getClient();
     const modelToUse = params.specificModel || this.defaultModel;
-    const userPrompt = `Aplica el siguiente prompt al siguiente texto de transcripción y elimina cualquier texto que este antes o despues de la estructura json\n\nPrompt: ${params.prompt}\nTranscripción: ${JSON.stringify(params.transcription)}`;
 
     this.logger.debug(
       `Generating extraction with OpenAI model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
+    const isReasoningModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
+    const formattedTranscription =
+      typeof params.transcription === 'string'
+        ? params.transcription
+        : JSON.stringify(params.transcription, null, 2);
+
+    const messages: any[] = [
+      {
+        role: 'system',
+        content:
+          'Eres un extractor de información estructurada en formato JSON. Responde EXCLUSIVAMENTE con el JSON resultante (objeto o array) según las instrucciones dadas. No incluyas explicaciones ni markdown decorativo fuera del JSON.',
+      },
+      {
+        role: 'user',
+        content: `Transcripción:\n${formattedTranscription}\n\nInstrucciones:\n${params.prompt}\n\nDevuelve exclusivamente el JSON:`,
+      },
+    ];
+
     const requestBody: any = {
       model: modelToUse,
-      messages: [{ role: 'user', content: userPrompt }],
+      messages,
     };
 
-    // Models like o1, o3, o4, gpt-5 only support default temperature (1) or reject temperature != 1
-    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
-    if (!isReasoningOrFixedTempModel) {
+    if (isReasoningModel) {
+      // Reasoning models use max_completion_tokens and do not accept custom temperature
+      requestBody.max_completion_tokens = 8192;
+    } else {
       requestBody.temperature = 0.2;
+      requestBody.max_tokens = 4096;
+      // Enable json_object response format for supported chat models
+      requestBody.response_format = { type: 'json_object' };
     }
 
     let response: any;
     try {
       response = await client.chat.completions.create(requestBody);
     } catch (error: any) {
-      if (error?.message?.includes('temperature') && 'temperature' in requestBody) {
+      const errMsg = error?.message || JSON.stringify(error);
+      if (
+        (errMsg.includes('temperature') ||
+          errMsg.includes('response_format') ||
+          errMsg.includes('max_tokens')) &&
+        ('temperature' in requestBody || 'response_format' in requestBody)
+      ) {
         this.logger.warn(
-          `Model ${modelToUse} does not support custom temperature: ${error.message}. Retrying without temperature parameter.`,
+          `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with standard payload.`,
         );
         delete requestBody.temperature;
+        delete requestBody.response_format;
         response = await client.chat.completions.create(requestBody);
       } else {
         throw error;
       }
     }
 
+    // Inspect usage and cache details
+    const usage = response?.usage;
+    if (usage?.prompt_tokens_details?.cached_tokens) {
+      this.logger.debug(
+        `[OpenAI Cache] Read ${usage.prompt_tokens_details.cached_tokens} cached tokens for ${params.modelName || 'unnamed'}`,
+      );
+    }
+
     const raw = this.getCompletionContent(response).trim();
+    if (!raw) {
+      throw new Error(
+        `El modelo OpenAI (${modelToUse}) devolvió una respuesta vacía.`,
+      );
+    }
+
     const sanitized = JsonSanitizerUtil.sanitizeJsonResponse(raw);
     const parsed = JsonSanitizerUtil.parsePossiblyChunkedJson(sanitized);
 

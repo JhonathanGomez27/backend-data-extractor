@@ -165,23 +165,24 @@ export class ModelsService {
       // Calcular tamaño de la transcripción
       const transcriptionSize = JSON.stringify(transcripcion).length;
 
-      const responses = await Promise.all(
-        models.map(async (model) => {
-          this.logger.debug(
-            `Processing model: ${model.name} (${model.id}) with provider: ${model.provider || 'default'} (model: ${model.aiModel || 'default'})`,
-          );
-          const response = await this.retryGenerateExtraction(
-            model.description,
-            transcripcion,
-            model.name,
-            3,
-            audio_source_value,
-            model.provider,
-            model.aiModel,
-          );
-          return { name: model.modelType.name, payload: response.response };
-        }),
-      );
+      // Ejecutar extracciones con concurrencia controlada (máximo 2 a 3 simultáneas)
+      // Esto permite que el 1er modelo inicialice el Prompt Cache de Anthropic/OpenAI
+      // y los siguientes modelos obtengan Cache Hit inmediato sin saturar la conexión.
+      const responses = await this.mapWithConcurrency(models, 2, async (model) => {
+        this.logger.debug(
+          `Processing model: ${model.name} (${model.id}) with provider: ${model.provider || 'default'} (model: ${model.aiModel || 'default'})`,
+        );
+        const response = await this.retryGenerateExtraction(
+          model.description,
+          transcripcion,
+          model.name,
+          3,
+          audio_source_value,
+          model.provider,
+          model.aiModel,
+        );
+        return { name: model.modelType.name, payload: response.response };
+      });
 
       const result = responses.reduce<Record<string, any>>((acc, item) => {
         acc[item.name] = item.payload;
@@ -422,5 +423,30 @@ export class ModelsService {
     });
 
     throw finalError;
+  }
+
+  /**
+   * Helper para ejecutar operaciones asíncronas con concurrencia limitada
+   */
+  private async mapWithConcurrency<T, R>(
+    items: T[],
+    limit: number,
+    fn: (item: T) => Promise<R>,
+  ): Promise<R[]> {
+    const results: R[] = new Array(items.length);
+    let currentIndex = 0;
+
+    const workers = Array.from(
+      { length: Math.min(limit, items.length) },
+      async () => {
+        while (currentIndex < items.length) {
+          const index = currentIndex++;
+          results[index] = await fn(items[index]);
+        }
+      },
+    );
+
+    await Promise.all(workers);
+    return results;
   }
 }
