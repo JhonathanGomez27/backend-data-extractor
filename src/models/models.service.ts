@@ -7,6 +7,7 @@ import { CreateModelDto } from './dto/create-model.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 import { OpenaiService } from 'src/openai/openai.service';
 import { AiService } from 'src/ai/ai.service';
+import { AiProviderType } from 'src/ai/ai.interfaces';
 import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 
@@ -395,7 +396,7 @@ export class ModelsService {
     model_name: string = '',
     maxRetries: number = 3,
     audio_source_value: string = '',
-    provider?: 'openai' | 'gemini' | 'claude',
+    provider?: AiProviderType | 'inherit',
     aiModel?: string,
   ): Promise<{ response: any }> {
     let lastError: Error | undefined;
@@ -405,6 +406,7 @@ export class ModelsService {
         this.logger.debug(
           `Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction via ${provider || 'default'}`,
         );
+        const effectiveProvider = provider && provider !== 'inherit' ? provider : undefined;
         const result = await this.aiService.generateExtraction(
           {
             prompt,
@@ -413,7 +415,7 @@ export class ModelsService {
             audioSource: audio_source_value,
             specificModel: aiModel,
           },
-          provider,
+          effectiveProvider,
           aiModel,
         );
 

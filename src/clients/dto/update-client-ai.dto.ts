@@ -2,8 +2,8 @@ import { IsIn, IsOptional, IsString } from 'class-validator';
 
 export class UpdateClientAiDto {
   @IsString()
-  @IsIn(['openai', 'gemini', 'claude'])
-  provider: 'openai' | 'gemini' | 'claude';
+  @IsIn(['openai', 'gemini', 'claude', 'deepseek'])
+  provider: 'openai' | 'gemini' | 'claude' | 'deepseek';
 
   @IsString()
   @IsOptional()

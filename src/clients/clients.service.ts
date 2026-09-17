@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { createClientDto } from './dto/create-client.dto';
 import * as bcrypt from 'bcrypt';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
+import { AiProviderType } from 'src/ai/ai.interfaces';
 @Injectable()
 export class ClientsService {
 
@@ -76,7 +77,7 @@ export class ClientsService {
         } });
     }
 
-    async updateAiConfig(id: string, dto: { provider: 'openai' | 'gemini' | 'claude'; aiModel?: string }): Promise<ClientEntity> {
+    async updateAiConfig(id: string, dto: { provider: AiProviderType; aiModel?: string }): Promise<ClientEntity> {
         const client = await this.clientRepo.findOne({ where: { id } });
         if (!client) throw new NotFoundException('Client not found');
 

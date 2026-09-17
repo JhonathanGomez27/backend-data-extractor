@@ -27,7 +27,7 @@ export class ClientEntity {
 
     // Configuración de Motor IA predeterminado para el cliente
     @Column({ type: 'varchar', default: 'openai', nullable: true })
-    provider: 'openai' | 'gemini' | 'claude';
+    provider: 'openai' | 'gemini' | 'claude' | 'deepseek';
 
     @Column({ type: 'varchar', nullable: true })
     aiModel: string | null;

@@ -23,7 +23,7 @@ export class ModelEntity {
   @Column({ type: 'jsonb', default: {}, nullable: true }) data: Record<string, any> | null;
 
   @Column({ type: 'varchar', default: 'inherit' })
-  provider: 'openai' | 'gemini' | 'claude' | 'inherit';
+  provider: 'openai' | 'gemini' | 'claude' | 'deepseek' | 'inherit';
 
   @Column({ type: 'varchar', nullable: true })
   aiModel: string | null;
