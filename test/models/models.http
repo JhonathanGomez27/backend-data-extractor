@@ -1,12 +1,12 @@
 ### Variables
 @API_URL = http://52.5.255.229:3001
 @TOKEN = your_jwt_token_here
-@CLIENT_ID = 17e38111-0fb1-4236-806a-666a53bee2ab
+@CLIENT_ID = 6a6c6c0c-a11d-45d7-84c9-c63d0aee0732
 @MODEL_TYPE_ID = e3ebad38-cb97-4bf3-83e0-ccc229e599d1
 @MODEL_ID = your_model_id_here
 
 # Basic Auth credentials (username:password in base64)
-@BASIC_AUTH = Basic QUFERDpBREREMjAyNg==
+@BASIC_AUTH = Basic Q2F0U2VydmVpczpDYXQxMjM0NTY3OA==
 
 
 ##################################################
@@ -188,202 +188,754 @@ Authorization: {{BASIC_AUTH}}
 {
   "transcripcion": [
     {
+      "speaker": "client",
+      "init_time": "0,870",
+      "end_time": "1,830",
+      "text": "Sí, dime, a ver."
+    },
+    {
       "speaker": "agent",
-      "init_time": "0,660",
-      "end_time": "15,360",
-      "text": "Señor Leandro Burgueño, por su seguridad, grabamos la conversación para que quede constancia de su interés en contratar el suministro de energía con Endesa Energía SAU, con domicilio en Calle Ribera de la Oira, número 6028042, Madrid. ¿Está de acuerdo, verdad?"
+      "init_time": "1,890",
+      "end_time": "3,090",
+      "text": "Hola, habla Josep Maria."
     },
     {
       "speaker": "client",
-      "init_time": "18,120",
-      "end_time": "18,300",
+      "init_time": "4,230",
+      "end_time": "4,830",
+      "text": "Es el mismo."
+    },
+    {
+      "speaker": "agent",
+      "init_time": "5,250",
+      "end_time": "9,870",
+      "text": "Josep Maria, ¿qué tal? Me llamo Xavi, le estoy llamando desde el rack del Reial Automòbil Club de Catalunya."
+    },
+    {
+      "speaker": "client",
+      "init_time": "10,890",
+      "end_time": "11,130",
       "text": "Sí."
     },
     {
       "speaker": "agent",
-      "init_time": "18,900",
-      "end_time": "46,680",
-      "text": "Le informamos de que su llamada podrá ser grabada por motivos de seguridad y que Endesa Energía tratará sus datos personales como responsables del tratamiento. Si desea obtener más información sobre la política de protección de datos de Endesa Energía, incluida la forma de ejercer sus derechos, puede consultar la web www.endesa-clientes.com. Conforme a los datos que nos has facilitado el 28 de enero del 2026, cuando son las 19:19, usted, Leandro Burgueño, con"
+      "init_time": "11,670",
+      "end_time": "29,370",
+      "text": "Muy buenas. Nada, una llamada muy breve, ¿eh? Antes que nada, le informo que, por motivos de calidad, grabamos la llamada. Le llamo, Josep Maria, porque usted ya lleva mucho tiempo con nosotros, siendo socio del rack, y como lleva un tiempo, tiene acceso a unos servicios exclusivos que damos a conocer a socios como usted, ¿eh?, que llevan un tiempo."
     },
     {
       "speaker": "agent",
-      "init_time": "47,760",
-      "end_time": "56,100",
-      "text": "NIE Z1913270, C de Cádiz, como titular del punto de suministro, autoriza"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "56,940",
-      "end_time": "64,380",
-      "text": "a Endesa a enviarle por SMS al teléfono móvil 613-962-900"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "65,220",
-      "end_time": "86,880",
-      "text": "su oferta de contratación de la tarifa Luz One. Esta oferta requiere tener factura electrónica al pago domiciliado y que todas las sesiones se realicen a través de la web o app de Endesa. Por tener contratada la tarifa One 2.0 TD, usted disfrutará de un único precio término de energía de 0,13272375 euros kilovatio hora, término de potencia punta y valle de 2,74."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "87,780",
-      "end_time": "92,400",
-      "text": "Al mes, disfrutarás de un 10% de descuento base sobre el término de energía durante un año,"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "93,360",
-      "end_time": "102,180",
-      "text": "quedándote en 0,119, válido para nuevas contrataciones. La aplicación de los descuentos está sujeta a la activación de productos contratados, impuestos no incluidos."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "103,740",
-      "end_time": "137,460",
-      "text": "Actualización de precios: primero de enero, con IPC, se aplicarán las revisiones de componentes regulados aprobados normativamente. Los precios de estas tarifas se actualizarán conforme el IPC y se aplicarán las revisiones de componentes regulados aprobados normativamente para el CUPS de luz ES0031, 104606002002XW0F, situado en la calle Berilio 86, Roquetas del Mar, piso bajo, puerta 301, 04740, Roquetas del Mar, Almería. ¿Es correcto, verdad?"
+      "init_time": "30,630",
+      "end_time": "40,410",
+      "text": "Y nada, son servicios que están muy bien, son muy completos; además, usted tiene descuentos, obviamente, por su antigüedad, y yo quería preguntarle uno, a ver si le podría interesar, solo es eso, Josep Maria. ¿Tiene dos minutos?"
     },
     {
       "speaker": "client",
-      "init_time": "139,380",
-      "end_time": "140,220",
-      "text": "Sí, es correcto."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "140,700",
-      "end_time": "152,160",
-      "text": "Como ha aceptado darse de alta en la factura electrónica, comenzaremos a emitir la factura una vez esté activa. Su correo electrónico con Endesa es leandroelburgue@yahoo.com.ar."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "153,000",
-      "end_time": "167,820",
-      "text": "El número de cuenta donde desea domiciliar el pago es ES6100493786742014224948, de la cual el titular coincide con el punto de suministro, ¿verdad?"
-    },
-    {
-      "speaker": "client",
-      "init_time": "170,340",
-      "end_time": "171,300",
-      "text": "No, el titular"
-    },
-    {
-      "speaker": "client",
-      "init_time": "173,160",
-      "end_time": "173,520",
-      "text": "de esa"
-    },
-    {
-      "speaker": "client",
-      "init_time": "176,160",
-      "end_time": "178,200",
-      "text": "cuenta es Romina Menceys."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "178,680",
-      "end_time": "180,060",
-      "text": "Pero la cuenta es compartida."
-    },
-    {
-      "speaker": "client",
-      "init_time": "184,680",
-      "end_time": "185,700",
-      "text": "Sí, así está nombradita."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "185,760",
-      "end_time": "187,380",
-      "text": "Pero la cuenta es compartida, ¿correcto?"
-    },
-    {
-      "speaker": "client",
-      "init_time": "189,600",
-      "end_time": "189,780",
+      "init_time": "40,710",
+      "end_time": "40,950",
       "text": "Sí."
     },
     {
       "speaker": "agent",
-      "init_time": "190,320",
-      "end_time": "191,760",
-      "text": "Vale. Entonces continúo."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "192,600",
-      "end_time": "192,840",
-      "text": "Una vez que"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "194,820",
-      "end_time": "215,640",
-      "text": "reciba el SMS, tan solo debe contestarnos con la palabra \"Sí\". Y según recibamos su contestación, tramitaremos con su distribuidora devolución de esa distribución eléctrica SL, para que pueda beneficiarse cuanto antes de los descuentos que le hemos enviado y comentado. Una vez nos haya aceptado su distribuidora el cambio con el contrato con su anterior comercializadora, quedará extinguido. ¿Está de acuerdo, verdad?"
+      "init_time": "41,850",
+      "end_time": "42,270",
+      "text": "¿Me escucha?"
     },
     {
       "speaker": "client",
-      "init_time": "217,320",
-      "end_time": "218,160",
-      "text": "Sí, estoy de acuerdo."
+      "init_time": "42,390",
+      "end_time": "43,830",
+      "text": "Casi que no, pero, bueno, dígame, dígame."
     },
     {
       "speaker": "agent",
-      "init_time": "218,460",
-      "end_time": "231,120",
-      "text": "Le recordamos que si era de baja dicho contrato, se anularían los descuentos que se le aplican por la tarifa contratada. Le recuerdo que en breve recibirá la copia de sus contratos de energía con las condiciones del producto que están además disponibles en nuestra página web"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "232,020",
-      "end_time": "236,460",
-      "text": "3ws.endesa-clientes.com. A partir de la fecha de celebración"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "238,740",
-      "end_time": "254,760",
-      "text": "del contrato, dispone de 14 días naturales para ejercer su derecho de existimiento, dirigiéndose por escrito a Endesa Energía SAU, al apartado postal 81808080, Barcelona, siempre que el suministro tenga cena de doméstico. A estos efectos, le interesa que el suministro"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "255,960",
-      "end_time": "260,580",
-      "text": "pueda dar comienzo dentro del plazo señalado de existimiento, conforme a la"
-    },
-    {
-      "speaker": "agent",
-      "init_time": "261,720",
-      "end_time": "263,580",
-      "text": "actual normativa de consumo. ¿Sí?"
+      "init_time": "44,610",
+      "end_time": "45,030",
+      "text": "Ah, pero."
     },
     {
       "speaker": "client",
-      "init_time": "265,380",
-      "end_time": "265,560",
+      "init_time": "46,050",
+      "end_time": "49,590",
+      "text": "Estoy esperando una llamada, que es importante, y a ver si me llaman ahora, ¿sabes?"
+    },
+    {
+      "speaker": "agent",
+      "init_time": "49,650",
+      "end_time": "52,950",
+      "text": "No, hombre, Josep Maria, pues le llamo por la tarde, ningún problema, hombre."
+    },
+    {
+      "speaker": "client",
+      "init_time": "53,010",
+      "end_time": "59,610",
+      "text": "Le llamo por la tarde mejor, sí. Porque ahora tengo que llevar una cosa y es que es la hora y debe estar a punto de llamar."
+    },
+    {
+      "speaker": "agent",
+      "init_time": "59,910",
+      "end_time": "60,990",
+      "text": "Venga, ¿hacia las 4?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "60,990",
+      "end_time": "63,930",
+      "text": "¿Hacia las 4? Un poco más, quizá."
+    },
+    {
+      "speaker": "agent",
+      "init_time": "64,410",
+      "end_time": "65,430",
+      "text": "Venga, las 4 y media."
+    },
+    {
+      "speaker": "client",
+      "init_time": "65,490",
+      "end_time": "66,330",
+      "text": "Ah, sí."
+    },
+    {
+      "speaker": "agent",
+      "init_time": "66,390",
+      "end_time": "72,330",
+      "text": "Ah, vale, vale, vale, pues un compañero, si no, si no le llama un compañero hacia las 6, ningún problema. Adiós, que le vaya muy bien, hasta luego."
+    },
+    {
+      "speaker": "client",
+      "init_time": "78,330",
+      "end_time": "81,150",
+      "text": "Buenas tardes. Josep Maria Artigas, ¿llamamos desde el rack?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "82,110",
+      "end_time": "82,290",
       "text": "Sí."
     },
     {
-      "speaker": "agent",
-      "init_time": "266,220",
-      "end_time": "281,700",
-      "text": "Te informamos de que no contratamos a clientes con bono social, por lo que si reúnes los requisitos, no podemos ofrecértelo. Si en un futuro cumpliera los requisitos para acceder a él, podrá resolver anticipadamente el contrato con nosotros sin penalización y contratar con una comercializadora de referencia."
-    },
-    {
-      "speaker": "agent",
-      "init_time": "283,860",
-      "end_time": "312,360",
-      "text": "Para cualquier consulta en relación con este contrato, puede contactar con Endesa a través del teléfono 807-609-09, a través de 3ws.endesa-clientes.com, a la dirección atención al cliente@endesaonline.com o a cualquiera de nuestras oficinas comerciales o puntos de servicio Endesa. Consciente que Endesa comunica sus datos personales a terceras empresas relacionadas con los sectores de hogar, seguros, automoción, servicios financieros y ocios basados en sus intereses. ¿Sí o no?"
+      "speaker": "client",
+      "init_time": "83,010",
+      "end_time": "86,670",
+      "text": "Josep Artigas, soy Germán, te llamo desde la Diagonal, desde la central, encantado."
     },
     {
       "speaker": "client",
-      "init_time": "313,800",
-      "end_time": "313,860",
-      "text": "No."
+      "init_time": "87,810",
+      "end_time": "91,710",
+      "text": "Era para explicarte una cosa, ¿tienes un minuto de verdad, señor Artigas, si es tan amable?"
     },
     {
-      "speaker": "agent",
-      "init_time": "315,540",
-      "end_time": "315,600",
-      "text": "Vale."
+      "speaker": "client",
+      "init_time": "92,850",
+      "end_time": "93,030",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "93,450",
+      "end_time": "107,070",
+      "text": "Mira, es un servicio nuevo, digamos sin compromiso, ¿eh?, para el socio, que se llama ElectroHàbitat Rack. Protege la instalación eléctrica y los electrodomésticos. Le hago una pregunta: ¿qué marca de electrodomésticos tiene, que quizá hay varias?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "107,970",
+      "end_time": "108,630",
+      "text": "Pues no lo sé."
+    },
+    {
+      "speaker": "client",
+      "init_time": "109,170",
+      "end_time": "110,010",
+      "text": "A ver, ¿no?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "110,610",
+      "end_time": "113,670",
+      "text": "No lo sé, porque además no estoy en casa, que estoy de vacaciones."
+    },
+    {
+      "speaker": "client",
+      "init_time": "113,790",
+      "end_time": "126,510",
+      "text": "Ah, no te preocupes, Josep Maria. Te lo decía porque en el rack, tú, por ejemplo, me lo invento, tienes Haier, la pieza es de tu marca, recomendada por el fabricante, y los primeros 100 euros de la pieza te los paga el rack. ¿Te entra la nevera?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "126,630",
+      "end_time": "126,930",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "127,050",
+      "end_time": "134,670",
+      "text": "Lavadora, lavavajillas, secadora, congelador, campana de vitroforo... y después, ¿qué tienes, Josep Maria, termo eléctrico o caldera de gas?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "136,350",
+      "end_time": "137,430",
+      "text": "Gas."
+    },
+    {
+      "speaker": "client",
+      "init_time": "137,790",
+      "end_time": "168,510",
+      "text": "Gas, vale. El gas no entra, porque va por otro lado, pero la instalación eléctrica te queda cubierta en su totalidad con un técnico titulado, y también con piezas, y también televisores. Puedes llamar a casas de manifestos, no importa la edad del aparato, quiero decir, aunque tenga más de 10 años, te queda cubierto, ni las veces que llames. Y después también tienes un servicio al año, Josep Maria, imagínate en verano quieres montar los ventiladores en el techo, o unos LEDs, también te hace el montaje en el rack. La pieza no, pero el montaje sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "170,070",
+      "end_time": "206,070",
+      "text": "Lo único es que no te entra la antena o el daño estético. Y están cubiertos para toda la vida, desde que empiezan, con garantía está cubierto. Y el manejo se incluye en piezas. El precio, Josep Maria, porque queremos que le des la oportunidad al rack, el precio no es un problema, porque normalmente el servicio está valorado en 230 euros al año. El rack, con más de 230, te cobra 89. Pero el primer año, para que lo podáis probar y valorar, se os hace 15. Y te queda por 75 euros todo el año. Son 6 euros al mes. 75 y 65 al año. ¿A qué suena, Josep Maria, esto parece justo?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "207,690",
+      "end_time": "208,530",
+      "text": "Sí, a ver."
+    },
+    {
+      "speaker": "client",
+      "init_time": "209,010",
+      "end_time": "209,250",
+      "text": "¡Hombre!"
+    },
+    {
+      "speaker": "client",
+      "init_time": "209,430",
+      "end_time": "213,570",
+      "text": "No lo sé, porque nosotros tenemos el piso desde hace muchos años."
+    },
+    {
+      "speaker": "client",
+      "init_time": "213,990",
+      "end_time": "214,230",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "214,530",
+      "end_time": "216,270",
+      "text": "Y los electrodomésticos, quiero decir."
+    },
+    {
+      "speaker": "client",
+      "init_time": "217,170",
+      "end_time": "219,930",
+      "text": "¿Nunca se te ha estropeado? Te estoy viendo por dónde vas."
+    },
+    {
+      "speaker": "client",
+      "init_time": "220,830",
+      "end_time": "224,070",
+      "text": "No, no, no, no. Es que no hemos tenido problemas con los."
+    },
+    {
+      "speaker": "client",
+      "init_time": "224,310",
+      "end_time": "225,630",
+      "text": "Josep Maria, en contra."
+    },
+    {
+      "speaker": "client",
+      "init_time": "225,630",
+      "end_time": "228,690",
+      "text": "Hemos cambiado una lavadora, quizá hemos cambiado."
+    },
+    {
+      "speaker": "client",
+      "init_time": "228,870",
+      "end_time": "232,650",
+      "text": "Sí. Mira, Josep Maria, como los electrodomésticos tienen una edad,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "233,790",
+      "end_time": "238,470",
+      "text": "está más cerca de que fallen. Con el rack no tendrás que cambiarlos. Eso es por."
+    },
+    {
+      "speaker": "client",
+      "init_time": "239,370",
+      "end_time": "240,510",
+      "text": "No, no estoy de acuerdo con eso."
+    },
+    {
+      "speaker": "client",
+      "init_time": "240,870",
+      "end_time": "241,050",
+      "text": "¿No?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "241,950",
+      "end_time": "245,730",
+      "text": "No, los electrodomésticos de hace 30 años"
+    },
+    {
+      "speaker": "client",
+      "init_time": "247,590",
+      "end_time": "249,690",
+      "text": "funcionan como mil años."
+    },
+    {
+      "speaker": "client",
+      "init_time": "249,990",
+      "end_time": "254,130",
+      "text": "Totalmente, porque no tenían obsolescencia programada. Totalmente de acuerdo."
+    },
+    {
+      "speaker": "client",
+      "init_time": "254,190",
+      "end_time": "257,430",
+      "text": "Los que hacen ahora sí, los que hacen ahora sí, que fallan al cabo de X años."
+    },
+    {
+      "speaker": "client",
+      "init_time": "257,850",
+      "end_time": "272,310",
+      "text": "Sí, sí, la obsolescencia programada, totalmente, totalmente. Es como los coches. Pero por si sé dónde está el rey, Josep Maria, tienes esta tranquilidad. No son dineros, también te cubre la instalación, que puedes tener un susto, te pueden venir a revisar."
+    },
+    {
+      "speaker": "client",
+      "init_time": "274,890",
+      "end_time": "275,250",
+      "text": "No lo sé."
+    },
+    {
+      "speaker": "client",
+      "init_time": "276,270",
+      "end_time": "278,190",
+      "text": "Eso, déjamelo. ¿Estás aquí?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "279,870",
+      "end_time": "282,090",
+      "text": "¿Cómo se oye? Ah, esto no se corta."
+    },
+    {
+      "speaker": "client",
+      "init_time": "283,290",
+      "end_time": "285,690",
+      "text": "¿Sí? ¿Sí?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "287,130",
+      "end_time": "289,050",
+      "text": "¿No tenemos comunicación? No lo sé."
+    },
+    {
+      "speaker": "client",
+      "init_time": "290,790",
+      "end_time": "291,150",
+      "text": "¿Sí?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "295,170",
+      "end_time": "295,350",
+      "text": "Hola."
+    },
+    {
+      "speaker": "client",
+      "init_time": "295,710",
+      "end_time": "299,430",
+      "text": "Hola, Josep Maria, se te había cortado. Perdona, yo te decía hola, hola, y no me oías."
+    },
+    {
+      "speaker": "client",
+      "init_time": "300,330",
+      "end_time": "301,350",
+      "text": "Sí, yo también decía."
+    },
+    {
+      "speaker": "client",
+      "init_time": "302,010",
+      "end_time": "309,150",
+      "text": "Tranquilidad. Yo te hago una propuesta desde el rack, para que lo podáis estudiar con tranquilidad y lo podáis hablar. Te lo digo porque el servicio vale la pena."
+    },
+    {
+      "speaker": "client",
+      "init_time": "310,170",
+      "end_time": "312,210",
+      "text": "Nosotros enviamos las condiciones."
+    },
+    {
+      "speaker": "client",
+      "init_time": "313,230",
+      "end_time": "340,290",
+      "text": "En las condiciones está todo lo que entra, lo que no entra. Y damos 21 días para que el socio se lo pueda pensar. Que en esos 21 días te parezca bien, no tienes que hacer nada. Desde el minuto puedes usarlo. Que por lo que sea no encaje, que sería una pena, porque esto es un servicio para dar tranquilidad, tienes 21 días para echarlo atrás. Sin dar ninguna explicación, que lo hacen muy pocos socios. Y así lo podéis estudiar por escrito y lo podéis valorar. ¿Qué te parece?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "341,130",
+      "end_time": "344,490",
+      "text": "Bueno, envíamelo, pero de todas formas tengo que decirte que yo tengo un seguro."
+    },
+    {
+      "speaker": "client",
+      "init_time": "345,150",
+      "end_time": "349,470",
+      "text": "Eres un trempado, ¿eh? Pero ¿de qué tienes un seguro? ¿No es de la casa, del coche?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "350,490",
+      "end_time": "353,190",
+      "text": "No, no, del talgo de la casa."
+    },
+    {
+      "speaker": "client",
+      "init_time": "353,790",
+      "end_time": "354,510",
+      "text": "¿De la casa?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "355,410",
+      "end_time": "357,270",
+      "text": "¿Seguro del hogar?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "357,510",
+      "end_time": "359,190",
+      "text": "De la casa, sí, de la casa. Tengo algo."
+    },
+    {
+      "speaker": "client",
+      "init_time": "360,030",
+      "end_time": "360,810",
+      "text": "¿Y te ha ido bien?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "362,190",
+      "end_time": "362,910",
+      "text": "No lo he usado."
+    },
+    {
+      "speaker": "client",
+      "init_time": "366,150",
+      "end_time": "369,750",
+      "text": "Porque todos somos iguales, Josep Maria. Puedo ir tocando."
+    },
+    {
+      "speaker": "client",
+      "init_time": "370,770",
+      "end_time": "376,230",
+      "text": "No, a ver, es eso que te digo, los electrodomésticos que tenemos, tenemos la nevera desde el principio, va como un reloj."
+    },
+    {
+      "speaker": "client",
+      "init_time": "376,710",
+      "end_time": "381,930",
+      "text": "Hombre, y así no seguir. Si los seguros son para no usarlos, Josep Maria, si eso te da la razón."
+    },
+    {
+      "speaker": "client",
+      "init_time": "383,130",
+      "end_time": "383,970",
+      "text": "Sí, sí, sí. Pero. Tengo bastantes seguros."
+    },
+    {
+      "speaker": "client",
+      "init_time": "384,270",
+      "end_time": "395,910",
+      "text": "Mira, yo ahora. Porque estoy en Barcelona, pero si un día estoy por Tarragona, te llamaré y me tocas, para que me des suerte, porque tú eres un tío muy afortunado, Josep Maria."
+    },
+    {
+      "speaker": "client",
+      "init_time": "396,030",
+      "end_time": "399,210",
+      "text": "No, a ver, yo te decía, los electrodomésticos antiguos."
+    },
+    {
+      "speaker": "client",
+      "init_time": "399,630",
+      "end_time": "407,850",
+      "text": "Ya, se hacen toda la semana, sí. Pero, Josep Maria, si mi mejor amigo es el jefe de Milar, de Electrodomèstics Milar,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "408,930",
+      "end_time": "458,190",
+      "text": "quiero decir que me habla mucho de electrodomésticos, y sé lo que quiere decir. Hagamos así, Josep Maria, yo te envío el contrato, tienes 21 días, si todo te parece bien, dame la oportunidad de valorarlo. Después te reviso los datos, ¿de acuerdo? Son dos minutos, que estamos fuera de horario. Este servicio te lo ofrece como responsable el rack, con José como colaborador, los técnicos. Y los contactaré con José. Mira, los datos personales que nos has facilitado en el rack son datos como responsable para nosotros para gestionar el contrato, y a la vez, sobre la base de la intranet legítima, si el contrato acaba ejecutándose, si tú no te pones en esto en este tiempo y nos lo dices, para que José pueda hacer encuestas de calidad para mirar productos y servicios, analizar los datos para ajustar ofertas comerciales a tu perfil, a ver qué se puede hacer de forma similar, o si te hemos dejado con velocidad, o hemos enviado algunas ofertas más similares. Puedes contactar con el rack siempre, que está informado del servicio contratado y de la atención prestada por los técnicos, hacemos una encuesta,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "459,030",
+      "end_time": "470,610",
+      "text": "exámenes de calidad, y puedes estar decidido entrando en la web del rack, diversidad, la zona es política, o llamando al rack 911 695, a José. Te llamas Josep Maria. Di Balenyà, ¿correcto?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "471,270",
+      "end_time": "471,510",
+      "text": "Sí, sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "471,570",
+      "end_time": "482,610",
+      "text": "Catalán, catalán, eh. El DNI es 37659065, na Tea Tarragona, y el correo es jm.artigas@cibertronic.com."
+    },
+    {
+      "speaker": "client",
+      "init_time": "482,910",
+      "end_time": "483,030",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "483,210",
+      "end_time": "483,570",
+      "text": "¿Correcto?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "483,630",
+      "end_time": "484,050",
+      "text": "Sí, exacto."
+    },
+    {
+      "speaker": "client",
+      "init_time": "484,230",
+      "end_time": "493,290",
+      "text": "Estás aquí en Tarragona, capital, en la calle Prat de Riba, número 6, tercero, cuarto. ¿Qué documentación quieres? ¿En catalán o en castellano, Josep Maria? Puedes elegir, eh."
+    },
+    {
+      "speaker": "client",
+      "init_time": "494,310",
+      "end_time": "504,270",
+      "text": "Da igual. Mira, te la pongo en catalán porque la ficha está en catalán y no. Mira todas las carpetas, te llegará mañana. En 24 horas, mañana lo tienes en documentación."
+    },
+    {
+      "speaker": "client",
+      "init_time": "504,450",
+      "end_time": "507,450",
+      "text": "Sí. Yo estoy fuera, eh, y estaré fuera durante dos semanas."
+    },
+    {
+      "speaker": "client",
+      "init_time": "507,750",
+      "end_time": "523,470",
+      "text": "No, no te preocupes, damos 35 días para que lo puedas echar atrás. No tiene que entrar en vigor ni se tiene que cobrar nada hasta el día 31. Te da tiempo de sobra. Incluso si se te pasa, el rack te da 35 días para que tú lo eches atrás. Te lo pongo en catalán porque, bueno, estamos hablando en catalán y todo eso."
+    },
+    {
+      "speaker": "client",
+      "init_time": "524,490",
+      "end_time": "535,350",
+      "text": "Sería hasta el día 31. Si al final se ejecuta, se pasaría el día 31 a los 75 euros por todo el año por la cuota del rack, la de la caja. Lo autorizarías, ¿verdad?, a dar instrucciones a la caja,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "536,250",
+      "end_time": "543,210",
+      "text": "a la caja, para que se omita la cuota, el día 31. Tienes tiempo de sobra, para echarlo atrás, ojalá que no. ¿De acuerdo, Josep Maria? Pues mira,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "544,710",
+      "end_time": "554,790",
+      "text": "te entra toda la instalación, electrodomésticos, servicios de manitas e ilimitado. Tramita el contrato con el servicio del rack."
+    },
+    {
+      "speaker": "client",
+      "init_time": "555,870",
+      "end_time": "557,010",
+      "text": "Se contrataría por un año."
+    },
+    {
+      "speaker": "client",
+      "init_time": "557,910",
+      "end_time": "579,510",
+      "text": "Siempre lo puedes echar atrás. Renovar, porque no tiene permanencia, avisando en un mes, como cualquier seguro. Y a partir del 17 de agosto entraría en vigor, siempre que tú quieras. Y tienes 35 días, ya te he dicho, para echar atrás el contrato. No tienes que dar ninguna explicación, quiero decir, eso sí que tienes que recalcarlo mucho, que si dices: mira, al final no lo haré, no te piden explicación, no intentan convencerte."
+    },
+    {
+      "speaker": "client",
+      "init_time": "579,870",
+      "end_time": "584,310",
+      "text": "Ya tengo que mirar si tengo que mirarlo si lo que tenemos con la caja"
+    },
+    {
+      "speaker": "client",
+      "init_time": "585,210",
+      "end_time": "586,170",
+      "text": "es lo mismo que esto."
+    },
+    {
+      "speaker": "client",
+      "init_time": "586,590",
+      "end_time": "619,290",
+      "text": "Exacto. Mira, Josep Maria, contrato con contrato, y cobertura por cobertura, que al final no lo quieres, lo echas atrás. 35 días. Cualquier duda que tengas, que tú quieras llamarme, Germán, llámame, que esto no me queda claro, te pones en contacto con nosotros y tienes dudas sobre la cobertura del servicio o asesoramiento, siempre. ¿Estás de acuerdo con estas condiciones, verdad, Josep Maria? Ahora, Josep Maria, para terminar, te envío una locución, que son 30 segundos, que es la aceptación de la oferta con la desistencia. Tienes que decirme que sí cuando suene la señal en el pip y ya."
+    },
+    {
+      "speaker": "client",
+      "init_time": "619,410",
+      "end_time": "619,530",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "619,590",
+      "end_time": "625,650",
+      "text": "Y no cuelgues, que quiero hacerte una última pregunta, ¿vale? No cuelgues, me dices que sí cuando suene la locución. Un momento, Josep Maria, te la envío."
+    },
+    {
+      "speaker": "client",
+      "init_time": "625,890",
+      "end_time": "626,430",
+      "text": "Bien, pues."
+    },
+    {
+      "speaker": "client",
+      "init_time": "626,550",
+      "end_time": "629,790",
+      "text": "Ahora, Josep Maria, soy Germán. Ya has podido contactarme, ¿no?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "630,450",
+      "end_time": "631,530",
+      "text": "Sí, sí, ya está."
+    },
+    {
+      "speaker": "client",
+      "init_time": "631,710",
+      "end_time": "634,590",
+      "text": "Entonces digo ok. Perfecto. Una última pregunta que te hago."
+    },
+    {
+      "speaker": "client",
+      "init_time": "635,850",
+      "end_time": "643,350",
+      "text": "¿Tienes aire acondicionado? Porque también estamos haciendo promoción con revisiones de aire, no sé si aquí tendríamos posibilidad. Yo pregunto, pregunto."
+    },
+    {
+      "speaker": "client",
+      "init_time": "644,310",
+      "end_time": "645,330",
+      "text": "Tengo aire acondicionado."
+    },
+    {
+      "speaker": "client",
+      "init_time": "645,630",
+      "end_time": "649,770",
+      "text": "Pero la revisión la haces con alguien o todavía no la has hecho? No sé si estamos a tiempo."
+    },
+    {
+      "speaker": "client",
+      "init_time": "650,610",
+      "end_time": "652,590",
+      "text": "Hace 30 años y funciona como un reloj."
+    },
+    {
+      "speaker": "client",
+      "init_time": "654,690",
+      "end_time": "656,310",
+      "text": "Sabía que me lo dirías, malnacido."
+    },
+    {
+      "speaker": "client",
+      "init_time": "656,730",
+      "end_time": "657,030",
+      "text": "Es verdad."
+    },
+    {
+      "speaker": "client",
+      "init_time": "657,150",
+      "end_time": "659,490",
+      "text": "Es verdad."
+    },
+    {
+      "speaker": "client",
+      "init_time": "661,230",
+      "end_time": "671,970",
+      "text": "Josep Maria, cuando venga a Tarragona ya te digo, solo tocata, ¿eh? Quiero decir, porque tienes suerte no se te ha estropeado nunca nada, o puede ser, escucha, si te puedo... A ver, compras algo bueno seguro, porque si no..."
+    },
+    {
+      "speaker": "client",
+      "init_time": "672,330",
+      "end_time": "674,430",
+      "text": "Era bueno, ¿eh?, el aparato. El aparato era bueno, ¿eh?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "674,910",
+      "end_time": "680,490",
+      "text": "30 años y... Pero bueno, el filtro sí que lo limpias tú y todo, ¿no? ¿Alguien hará el mantenimiento?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "681,870",
+      "end_time": "682,050",
+      "text": "Sí."
+    },
+    {
+      "speaker": "client",
+      "init_time": "682,770",
+      "end_time": "682,890",
+      "text": "Claro, claro."
+    },
+    {
+      "speaker": "client",
+      "init_time": "683,850",
+      "end_time": "684,750",
+      "text": "Limpiamos los filtros."
+    },
+    {
+      "speaker": "client",
+      "init_time": "685,230",
+      "end_time": "692,010",
+      "text": "Vale, ya está, y nada. Josep Maria, no se te ha estropeado nunca nada a ti. Y que dure, y que dure."
+    },
+    {
+      "speaker": "client",
+      "init_time": "692,610",
+      "end_time": "693,510",
+      "text": "Que dure, que dure."
+    },
+    {
+      "speaker": "client",
+      "init_time": "693,690",
+      "end_time": "696,030",
+      "text": "Y que dure. Bueno, Josep Maria, pues ya está."
+    },
+    {
+      "speaker": "client",
+      "init_time": "697,710",
+      "end_time": "709,050",
+      "text": "Con el correo que te envío, también te envío un archivo que es la grabación de la llamada, que es la acreditación del contrato de las partes, por si la quieres escuchar, pues tienes que poner DNI y letra, tampoco es muy complicado."
+    },
+    {
+      "speaker": "client",
+      "init_time": "710,010",
+      "end_time": "714,150",
+      "text": "¿Vale? Pues un abrazo fuerte, y gracias por la oportunidad, por al menos valorarlo,"
+    },
+    {
+      "speaker": "client",
+      "init_time": "715,050",
+      "end_time": "725,130",
+      "text": "de dejar que te lo envíe para que puedas tenerlo como algo valioso y todo, y si escuchas, si al final lo echas atrás, que seguro que no, ningún problema. Un abrazo fuerte, Josep Maria, desde el rack, ¿eh?"
+    },
+    {
+      "speaker": "client",
+      "init_time": "725,970",
+      "end_time": "729,930",
+      "text": "Que tengas un buen verano por aquí por Tarragona, trabajado. Adiós, Josep Maria."
+    },
+    {
+      "speaker": "client",
+      "init_time": "731,190",
+      "end_time": "731,670",
+      "text": "Adiós."
     }
   ]
 }

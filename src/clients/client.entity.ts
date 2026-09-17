@@ -25,6 +25,13 @@ export class ClientEntity {
     @Column({ unique: true }) basicUsername: string;
     @Column() basicPasswordHash: string;
 
+    // Configuración de Motor IA predeterminado para el cliente
+    @Column({ type: 'varchar', default: 'openai', nullable: true })
+    provider: 'openai' | 'gemini' | 'claude';
+
+    @Column({ type: 'varchar', nullable: true })
+    aiModel: string | null;
+
     @OneToMany(() => ModelEntity, m => m.client) models: ModelEntity[];
     @OneToMany(() => ModelTypeEntity, mt => mt.client) modelTypes: ModelTypeEntity[];
 

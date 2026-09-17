@@ -35,6 +35,11 @@ export default () => ({
         apiKey: process.env.ANTHROPIC_API_KEY || '',
         defaultModel: process.env.ANTHROPIC_DEFAULT_MODEL || 'claude-3-5-haiku-20241022',
     },
+    deepseek: {
+        apiKey: process.env.DEEPSEEK_API_KEY || '',
+        defaultModel: process.env.DEEPSEEK_DEFAULT_MODEL || 'deepseek-chat',
+        baseUrl: process.env.DEEPSEEK_BASE_URL || 'https://api.deepseek.com',
+    },
     telegram: {
         botToken: process.env.TELEGRAM_BOT_TOKEN || 'your_telegram_bot_token_here',
         chatId: process.env.TELEGRAM_CHAT_ID || 'your_telegram_chat_id_here'

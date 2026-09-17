@@ -11,7 +11,7 @@ export class CreateModelDto {
 
   @IsOptional() @IsObject() data?: Record<string, any>;
 
-  @IsOptional() @IsIn(['openai', 'gemini', 'claude']) provider?: 'openai' | 'gemini' | 'claude';
+  @IsOptional() @IsIn(['openai', 'gemini', 'claude', 'inherit']) provider?: 'openai' | 'gemini' | 'claude' | 'inherit';
 
   @IsOptional() @IsString() aiModel?: string;
 

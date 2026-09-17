@@ -11,4 +11,7 @@ export class createClientDto {
   // credenciales iniciales para Basic
   @IsString() @MinLength(4) basicUsername: string;
   @IsString() @MinLength(8) basicPassword: string;
+
+  @IsString() @IsOptional() provider?: 'openai' | 'gemini' | 'claude';
+  @IsString() @IsOptional() aiModel?: string;
 }

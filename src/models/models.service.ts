@@ -10,6 +10,9 @@ import { AiService } from 'src/ai/ai.service';
 import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 
+import { ClientEntity } from 'src/clients/client.entity';
+import { BulkUpdateAiDto } from './dto/bulk-update-ai.dto';
+
 type ModuleDef = {
   key: string;
   enabled: boolean;
@@ -24,6 +27,7 @@ export class ModelsService {
 
   constructor(
     @InjectRepository(ModelEntity) private repo: Repository<ModelEntity>,
+    @InjectRepository(ClientEntity) private clientRepo: Repository<ClientEntity>,
     @Inject(REQ) private request: any,
     private openaiService: OpenaiService,
     private aiService: AiService,
@@ -68,7 +72,7 @@ export class ModelsService {
         'createdAt',
         'updatedAt'
       ],
-      relations: ['modelType'],
+      relations: ['modelType', 'client'],
       order: { createdAt: 'DESC' },
       take: limit,
       skip: (page - 1) * limit,
@@ -80,6 +84,26 @@ export class ModelsService {
       page,
       limit,
     };
+  }
+
+  async bulkUpdateAiConfigForClient(
+    clientId: string,
+    dto: BulkUpdateAiDto,
+  ): Promise<{ updated: number }> {
+    const updateData: any = {
+      provider: dto.provider,
+      updatedAt: new Date(),
+    };
+    if (dto.aiModel !== undefined) {
+      updateData.aiModel = dto.aiModel || null;
+    }
+
+    const result = await this.repo.update({ clientId }, updateData);
+    this.logger.log(
+      `Bulk updated ${result.affected || 0} models for client ${clientId} to provider: ${dto.provider} (model: ${dto.aiModel || 'default'})`,
+    );
+
+    return { updated: result.affected || 0 };
   }
 
   getAiProviders() {
@@ -151,6 +175,12 @@ export class ModelsService {
     this.logger.log(`Starting extraction for client: ${clientId}`);
 
     try {
+      // Get client configuration to support inheritance
+      const client = await this.clientRepo.findOne({
+        where: { id: clientId },
+        select: { id: true, name: true, provider: true, aiModel: true },
+      });
+
       // Get active models for the client
       const models = await this.repo.find({
         where: { clientId, status: 'active' }, relations: ['modelType']
@@ -160,7 +190,9 @@ export class ModelsService {
         throw new NotFoundException('No active models found for the client');
       }
 
-      this.logger.log(`Found ${models.length} active models for client ${clientId}`);
+      this.logger.log(
+        `Found ${models.length} active models for client ${clientId} (client default provider: ${client?.provider || 'default'}, model: ${client?.aiModel || 'default'})`,
+      );
 
       // Calcular tamaño de la transcripción
       const transcriptionSize = JSON.stringify(transcripcion).length;
@@ -169,8 +201,17 @@ export class ModelsService {
       // Esto permite que el 1er modelo inicialice el Prompt Cache de Anthropic/OpenAI
       // y los siguientes modelos obtengan Cache Hit inmediato sin saturar la conexión.
       const responses = await this.mapWithConcurrency(models, 2, async (model) => {
+        // Resolve effective provider & model: model-specific override > client setting > global default
+        const effectiveProvider = (model.provider && model.provider !== 'inherit')
+          ? model.provider
+          : (client?.provider || undefined);
+
+        const effectiveAiModel = (model.aiModel && model.aiModel !== 'inherit')
+          ? model.aiModel
+          : (client?.aiModel || undefined);
+
         this.logger.debug(
-          `Processing model: ${model.name} (${model.id}) with provider: ${model.provider || 'default'} (model: ${model.aiModel || 'default'})`,
+          `Processing model: ${model.name} (${model.id}) with provider: ${effectiveProvider || 'default'} (model: ${effectiveAiModel || 'default'}, declared on model: ${model.provider || 'none'})`,
         );
         const response = await this.retryGenerateExtraction(
           model.description,
@@ -178,8 +219,8 @@ export class ModelsService {
           model.name,
           3,
           audio_source_value,
-          model.provider,
-          model.aiModel,
+          effectiveProvider,
+          effectiveAiModel,
         );
         return { name: model.modelType.name, payload: response.response };
       });

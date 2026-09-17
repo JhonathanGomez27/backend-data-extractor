@@ -22,7 +22,9 @@ export class ClientsService {
             description: dto.description,
             imageUrl: dto.imageUrl,
             basicUsername: dto.basicUsername,
-            basicPasswordHash
+            basicPasswordHash,
+            provider: dto.provider || 'openai',
+            aiModel: dto.aiModel || null
         });
         return this.clientRepo.save(client);
     }
@@ -42,6 +44,8 @@ export class ClientsService {
                 description: true,
                 imageUrl: true,
                 basicUsername: true,
+                provider: true,
+                aiModel: true,
                 createdAt: true
             },
             skip,
@@ -66,8 +70,20 @@ export class ClientsService {
             description: true,
             imageUrl: true,
             basicUsername: true,
+            provider: true,
+            aiModel: true,
             createdAt: true
         } });
+    }
+
+    async updateAiConfig(id: string, dto: { provider: 'openai' | 'gemini' | 'claude'; aiModel?: string }): Promise<ClientEntity> {
+        const client = await this.clientRepo.findOne({ where: { id } });
+        if (!client) throw new NotFoundException('Client not found');
+
+        client.provider = dto.provider;
+        client.aiModel = dto.aiModel || null;
+
+        return this.clientRepo.save(client);
     }
 
     async rotateBasicPassword(id: string): Promise<{ username: string; password: string }> {

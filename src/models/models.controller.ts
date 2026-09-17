@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   Param,
+  Patch,
   Post,
   Put,
   Query,
@@ -11,6 +12,7 @@ import {
 import { ModelsService } from './models.service';
 import { JwtAuthGuard } from 'src/common/guards/jwt-auth.guard';
 import { CreateModelDto } from './dto/create-model.dto';
+import { BulkUpdateAiDto } from './dto/bulk-update-ai.dto';
 import { BasicAuthGuard } from 'src/common/guards/basic-auth.guard';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 
@@ -31,6 +33,16 @@ export class ModelsController {
   @Put(':id')
   updateModel(@Param('id') id: string, @Body() dto: CreateModelDto) {
     return this.service.updateModel(id, dto);
+  }
+
+  // Bulk update AI configuration for all models of a client
+  @UseGuards(JwtAuthGuard)
+  @Patch('client/:clientId/bulk-ai-config')
+  bulkUpdateClientModels(
+    @Param('clientId') clientId: string,
+    @Body() dto: BulkUpdateAiDto,
+  ) {
+    return this.service.bulkUpdateAiConfigForClient(clientId, dto);
   }
 
   //Get all models with pagination

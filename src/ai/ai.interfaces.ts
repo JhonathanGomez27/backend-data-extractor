@@ -1,4 +1,4 @@
-export type AiProviderType = 'openai' | 'gemini' | 'claude';
+export type AiProviderType = 'openai' | 'gemini' | 'claude' | 'deepseek';
 
 export interface AiExtractionParams {
   prompt: string;

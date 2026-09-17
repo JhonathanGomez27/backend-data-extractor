@@ -10,6 +10,7 @@ import {
 import { OpenaiProvider } from './providers/openai.provider';
 import { GeminiProvider } from './providers/gemini.provider';
 import { ClaudeProvider } from './providers/claude.provider';
+import { DeepseekProvider } from './providers/deepseek.provider';
 
 @Injectable()
 export class AiService {
@@ -22,14 +23,18 @@ export class AiService {
     private openaiProvider: OpenaiProvider,
     private geminiProvider: GeminiProvider,
     private claudeProvider: ClaudeProvider,
+    private deepseekProvider: DeepseekProvider,
   ) {
     this.providers.set('openai', this.openaiProvider);
     this.providers.set('gemini', this.geminiProvider);
     this.providers.set('claude', this.claudeProvider);
+    this.providers.set('deepseek', this.deepseekProvider);
 
     const configuredDefault = this.config.get<string>('ai.defaultProvider');
     this.defaultProviderType = (
-      configuredDefault === 'gemini' || configuredDefault === 'claude'
+      configuredDefault === 'gemini' ||
+      configuredDefault === 'claude' ||
+      configuredDefault === 'deepseek'
         ? configuredDefault
         : 'openai'
     ) as AiProviderType;
@@ -108,6 +113,13 @@ export class AiService {
         defaultModel: this.claudeProvider.getDefaultModel(),
         availableModels: this.claudeProvider.getAvailableModels(),
       },
+      {
+        id: 'deepseek',
+        name: 'DeepSeek',
+        isConfigured: this.deepseekProvider.isAvailable(),
+        defaultModel: this.deepseekProvider.getDefaultModel(),
+        availableModels: this.deepseekProvider.getAvailableModels(),
+      },
     ];
   }
 
@@ -116,6 +128,7 @@ export class AiService {
     if (this.openaiProvider.isAvailable()) names.push('openai');
     if (this.geminiProvider.isAvailable()) names.push('gemini');
     if (this.claudeProvider.isAvailable()) names.push('claude');
+    if (this.deepseekProvider.isAvailable()) names.push('deepseek');
     return names;
   }
 }

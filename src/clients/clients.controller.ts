@@ -4,6 +4,8 @@ import { ClientsService } from './clients.service';
 import { createClientDto } from './dto/create-client.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 
+import { UpdateClientAiDto } from './dto/update-client-ai.dto';
+
 @UseGuards(JwtAuthGuard)
 @Controller('admin/clients')
 export class ClientsController {
@@ -32,6 +34,14 @@ export class ClientsController {
         @Param('id') id: string
     ) {
         return this.service.findById(id);
+    }
+
+    @Patch(':id/ai-config')
+    async updateClientAiConfig(
+        @Param('id') id: string,
+        @Body() dto: UpdateClientAiDto
+    ) {
+        return this.service.updateAiConfig(id, dto);
     }
 
     @Patch(':id/reset-basic')
