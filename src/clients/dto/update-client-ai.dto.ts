@@ -8,4 +8,9 @@ export class UpdateClientAiDto {
   @IsString()
   @IsOptional()
   aiModel?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['low', 'medium', 'high'])
+  reasoningEffort?: 'low' | 'medium' | 'high';
 }

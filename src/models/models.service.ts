@@ -7,7 +7,7 @@ import { CreateModelDto } from './dto/create-model.dto';
 import { PaginatorDto } from 'src/common/paginator/paginator.dto';
 import { OpenaiService } from 'src/openai/openai.service';
 import { AiService } from 'src/ai/ai.service';
-import { AiProviderType } from 'src/ai/ai.interfaces';
+import { AiProviderType, ReasoningEffort } from 'src/ai/ai.interfaces';
 import { ExtractionLogsService } from 'src/extraction-logs/extraction-logs.service';
 import { TelegramService } from 'src/telegram/telegram.service';
 
@@ -70,6 +70,7 @@ export class ModelsService {
         'modelTypeId',
         'provider',
         'aiModel',
+        'reasoningEffort',
         'createdAt',
         'updatedAt'
       ],
@@ -97,6 +98,9 @@ export class ModelsService {
     };
     if (dto.aiModel !== undefined) {
       updateData.aiModel = dto.aiModel || null;
+    }
+    if (dto.reasoningEffort !== undefined) {
+      updateData.reasoningEffort = dto.reasoningEffort || 'inherit';
     }
 
     const result = await this.repo.update({ clientId }, updateData);
@@ -211,8 +215,12 @@ export class ModelsService {
           ? model.aiModel
           : (client?.aiModel || undefined);
 
+        const effectiveReasoningEffort = (model.reasoningEffort && model.reasoningEffort !== 'inherit')
+          ? model.reasoningEffort
+          : (client?.reasoningEffort || 'medium');
+
         this.logger.debug(
-          `Processing model: ${model.name} (${model.id}) with provider: ${effectiveProvider || 'default'} (model: ${effectiveAiModel || 'default'}, declared on model: ${model.provider || 'none'})`,
+          `Processing model: ${model.name} (${model.id}) with provider: ${effectiveProvider || 'default'} (model: ${effectiveAiModel || 'default'}, effort: ${effectiveReasoningEffort}, declared on model: ${model.provider || 'none'})`,
         );
         const response = await this.retryGenerateExtraction(
           model.description,
@@ -222,6 +230,7 @@ export class ModelsService {
           audio_source_value,
           effectiveProvider,
           effectiveAiModel,
+          effectiveReasoningEffort as ReasoningEffort,
         );
         return { name: model.modelType.name, payload: response.response };
       });
@@ -398,13 +407,14 @@ export class ModelsService {
     audio_source_value: string = '',
     provider?: AiProviderType | 'inherit',
     aiModel?: string,
+    reasoningEffort?: ReasoningEffort,
   ): Promise<{ response: any }> {
     let lastError: Error | undefined;
 
     for (let attempt = 1; attempt <= maxRetries; attempt++) {
       try {
         this.logger.debug(
-          `Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction via ${provider || 'default'}`,
+          `Attempt ${attempt}/${maxRetries} for ${model_name} generateExtraction via ${provider || 'default'} (effort: ${reasoningEffort || 'default'})`,
         );
         const effectiveProvider = provider && provider !== 'inherit' ? provider : undefined;
         const result = await this.aiService.generateExtraction(
@@ -414,6 +424,7 @@ export class ModelsService {
             modelName: model_name,
             audioSource: audio_source_value,
             specificModel: aiModel,
+            reasoningEffort,
           },
           effectiveProvider,
           aiModel,

@@ -24,6 +24,18 @@ describe('DeepseekProvider', () => {
     expect(provider.isAvailable()).toBe(true);
   });
 
+  it('should automatically strip Bearer prefix from apiKey', () => {
+    const bearerConfig = {
+      get: jest.fn((key: string) => {
+        if (key === 'deepseek.apiKey') return 'Bearer sk-my-secret-key';
+        return null;
+      }),
+    } as unknown as ConfigService;
+    const provider = new DeepseekProvider(bearerConfig);
+    expect((provider as any).apiKey).toBe('sk-my-secret-key');
+    expect(provider.isAvailable()).toBe(true);
+  });
+
   it('should report isAvailable as false when api key is missing or placeholder', () => {
     const emptyConfig = {
       get: jest.fn(() => ''),

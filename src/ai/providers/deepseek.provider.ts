@@ -26,7 +26,8 @@ export class DeepseekProvider implements AiProviderInterface {
   ];
 
   constructor(private config: ConfigService) {
-    this.apiKey = this.config.get<string>('deepseek.apiKey') || '';
+    const rawKey = this.config.get<string>('deepseek.apiKey') || '';
+    this.apiKey = rawKey.replace(/^Bearer\s+/i, '').trim();
     this.defaultModel =
       this.config.get<string>('deepseek.defaultModel') || 'deepseek-chat';
     this.baseUrl =

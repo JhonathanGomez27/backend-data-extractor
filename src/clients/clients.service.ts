@@ -47,6 +47,7 @@ export class ClientsService {
                 basicUsername: true,
                 provider: true,
                 aiModel: true,
+                reasoningEffort: true,
                 createdAt: true
             },
             skip,
@@ -73,16 +74,20 @@ export class ClientsService {
             basicUsername: true,
             provider: true,
             aiModel: true,
+            reasoningEffort: true,
             createdAt: true
         } });
     }
 
-    async updateAiConfig(id: string, dto: { provider: AiProviderType; aiModel?: string }): Promise<ClientEntity> {
+    async updateAiConfig(id: string, dto: { provider: AiProviderType; aiModel?: string; reasoningEffort?: 'low' | 'medium' | 'high' }): Promise<ClientEntity> {
         const client = await this.clientRepo.findOne({ where: { id } });
         if (!client) throw new NotFoundException('Client not found');
 
         client.provider = dto.provider;
         client.aiModel = dto.aiModel || null;
+        if (dto.reasoningEffort !== undefined) {
+            client.reasoningEffort = dto.reasoningEffort;
+        }
 
         return this.clientRepo.save(client);
     }

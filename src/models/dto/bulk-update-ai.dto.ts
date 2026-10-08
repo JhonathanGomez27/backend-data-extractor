@@ -8,4 +8,9 @@ export class BulkUpdateAiDto {
   @IsString()
   @IsOptional()
   aiModel?: string;
+
+  @IsString()
+  @IsOptional()
+  @IsIn(['low', 'medium', 'high', 'inherit'])
+  reasoningEffort?: 'low' | 'medium' | 'high' | 'inherit';
 }

@@ -109,6 +109,7 @@ export class OpenaiProvider implements AiProviderInterface {
     if (isReasoningModel) {
       // Reasoning models use max_completion_tokens and do not accept custom temperature
       requestBody.max_completion_tokens = 8192;
+      requestBody.reasoning_effort = params.reasoningEffort || 'medium';
     } else {
       requestBody.temperature = 0.2;
       requestBody.max_tokens = 4096;
@@ -130,6 +131,12 @@ export class OpenaiProvider implements AiProviderInterface {
           `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with standard payload.`,
         );
         delete requestBody.temperature;
+        response = await client.chat.completions.create(requestBody);
+      } else if (errMsg.includes('reasoning_effort') && 'reasoning_effort' in requestBody) {
+        this.logger.warn(
+          `Model ${modelToUse} does not support reasoning_effort: ${error.message}. Retrying without reasoning_effort.`,
+        );
+        delete requestBody.reasoning_effort;
         response = await client.chat.completions.create(requestBody);
       } else {
         throw error;

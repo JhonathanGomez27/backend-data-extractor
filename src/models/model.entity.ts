@@ -28,6 +28,9 @@ export class ModelEntity {
   @Column({ type: 'varchar', nullable: true })
   aiModel: string | null;
 
+  @Column({ type: 'varchar', nullable: true, default: 'inherit' })
+  reasoningEffort: 'low' | 'medium' | 'high' | 'inherit' | null;
+
   @Index()
   @Column({ type: 'uuid' })
   clientId: string;

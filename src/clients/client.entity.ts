@@ -32,6 +32,9 @@ export class ClientEntity {
     @Column({ type: 'varchar', nullable: true })
     aiModel: string | null;
 
+    @Column({ type: 'varchar', nullable: true, default: 'medium' })
+    reasoningEffort: 'low' | 'medium' | 'high' | null;
+
     @OneToMany(() => ModelEntity, m => m.client) models: ModelEntity[];
     @OneToMany(() => ModelTypeEntity, mt => mt.client) modelTypes: ModelTypeEntity[];
 

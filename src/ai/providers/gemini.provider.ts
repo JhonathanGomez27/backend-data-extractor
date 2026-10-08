@@ -91,8 +91,13 @@ export class GeminiProvider implements AiProviderInterface {
     };
 
     if (isThinkingModel) {
+      const budgetMap: Record<string, number> = {
+        low: 1024,
+        medium: 2048,
+        high: 4096,
+      };
       config.thinkingConfig = {
-        thinkingBudget: 2048,
+        thinkingBudget: budgetMap[params.reasoningEffort || 'medium'] || 2048,
       };
     } else {
       config.temperature = 0.2;

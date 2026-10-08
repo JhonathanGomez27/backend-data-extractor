@@ -119,18 +119,25 @@ export class ClaudeProvider implements AiProviderInterface {
       ],
     };
 
+    const effort = params.reasoningEffort || 'medium';
+    const budgetTokensMap: Record<string, number> = {
+      low: 1024,
+      medium: 2048,
+      high: 4096,
+    };
+
     if (isAdaptiveThinkingModel) {
       requestBody.thinking = {
         type: 'adaptive',
       };
       requestBody.output_config = {
-        effort: 'medium',
+        effort,
       };
       // Note: temperature cannot be set when thinking is enabled in Anthropic
     } else if (isBudgetThinkingModel) {
       requestBody.thinking = {
         type: 'enabled',
-        budget_tokens: 2048,
+        budget_tokens: budgetTokensMap[effort] || 2048,
       };
       // Note: temperature cannot be set when thinking is enabled in Anthropic
     } else {

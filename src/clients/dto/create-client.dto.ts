@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
+import { IsIn, IsNotEmpty, IsOptional, IsString, MinLength } from 'class-validator';
 
 export class createClientDto {
   @IsString()
@@ -14,4 +14,5 @@ export class createClientDto {
 
   @IsString() @IsOptional() provider?: 'openai' | 'gemini' | 'claude' | 'deepseek';
   @IsString() @IsOptional() aiModel?: string;
+  @IsString() @IsOptional() @IsIn(['low', 'medium', 'high']) reasoningEffort?: 'low' | 'medium' | 'high';
 }

@@ -1,4 +1,5 @@
 export type AiProviderType = 'openai' | 'gemini' | 'claude' | 'deepseek';
+export type ReasoningEffort = 'low' | 'medium' | 'high';
 
 export interface AiExtractionParams {
   prompt: string;
@@ -7,6 +8,7 @@ export interface AiExtractionParams {
   audioSource?: string;
   modelPrompt?: string;
   specificModel?: string;
+  reasoningEffort?: ReasoningEffort;
 }
 
 export interface AiExtractionResult {

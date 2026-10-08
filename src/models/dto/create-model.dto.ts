@@ -15,5 +15,7 @@ export class CreateModelDto {
 
   @IsOptional() @IsString() aiModel?: string;
 
+  @IsOptional() @IsIn(['low', 'medium', 'high', 'inherit']) reasoningEffort?: 'low' | 'medium' | 'high' | 'inherit';
+
   @IsOptional() @IsString() status?: 'active' | 'inactive'; 
 }
