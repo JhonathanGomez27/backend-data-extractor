@@ -232,7 +232,7 @@ export class OpenaiService {
       messages,
     };
 
-    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(this.summaryModel);
+    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-[5-9])/i.test(this.summaryModel);
     if (!isReasoningOrFixedTempModel) {
       requestBody.temperature = 0.2;
     }

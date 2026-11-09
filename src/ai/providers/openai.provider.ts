@@ -83,7 +83,7 @@ export class OpenaiProvider implements AiProviderInterface {
       `Generating extraction with OpenAI model: ${modelToUse} for ${params.modelName || 'unnamed'}`,
     );
 
-    const isReasoningModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
+    const isReasoningModel = /^(o1|o3|o4|gpt-[5-9])/i.test(modelToUse);
     const formattedTranscription =
       typeof params.transcription === 'string'
         ? params.transcription
@@ -131,6 +131,10 @@ export class OpenaiProvider implements AiProviderInterface {
           `Model ${modelToUse} parameter adjustment needed: ${error.message}. Retrying with standard payload.`,
         );
         delete requestBody.temperature;
+        if ('max_tokens' in requestBody) {
+          requestBody.max_completion_tokens = requestBody.max_tokens;
+          delete requestBody.max_tokens;
+        }
         response = await client.chat.completions.create(requestBody);
       } else if (errMsg.includes('reasoning_effort') && 'reasoning_effort' in requestBody) {
         this.logger.warn(
@@ -190,7 +194,7 @@ export class OpenaiProvider implements AiProviderInterface {
       ],
     };
 
-    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-5)/i.test(modelToUse);
+    const isReasoningOrFixedTempModel = /^(o1|o3|o4|gpt-[5-9])/i.test(modelToUse);
     if (!isReasoningOrFixedTempModel) {
       requestBody.temperature = 0.2;
     }
